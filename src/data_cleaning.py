@@ -2,9 +2,13 @@ import pandas as pd
 import numpy as np
 import re
 
-def clean_manufacturing_data(file_path):
-    """Parse messy Census table_1.csv to tidy format"""
+def clean_manufacturing_data():
+    """Load table_1.csv from data/raw/ and return tidy DataFrame"""
     
+    file_path = 'data/raw/table_1.csv'
+    
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Put table_1.csv in {file_path}")
     # Raw read handles commas in numbers
     df_raw = pd.read_csv(file_path, header=None)
     
