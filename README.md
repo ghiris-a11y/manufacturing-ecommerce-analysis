@@ -19,13 +19,11 @@
 <img src="https://img.shields.io/badge/Dash-119DFF?style=for-the-badge&logo=dash&logoColor=white" />
 </div>
 
-## 🚀 Quick Start
 
-### Local
+## 🏃‍♂️ Quick Start
 ```bash
-git clone https://github.com/YOUR_USERNAME/manufacturing-ecommerce-analysis
-cd manufacturing-ecommerce-analysis
 pip install -r requirements.txt
 python src/data_cleaning.py
-python dash_app/app.py  # http://localhost:8050
+python dash_app/app.py
+
 
