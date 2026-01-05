@@ -1,7 +1,6 @@
  
 # 🏭 U.S. Manufacturing E-commerce Penetration Analysis (1999-2015)
-
-[![Dash App](https://img.shields.io/badge/Live_Demo-Dash-blue?style=for-the-badge&logo=plotly)](https://your-railway-url.railway.app)
+[![Live Demo](https://img.shields.io/badge/Live-https://ghp-xyz-8050.app.github.dev-blue)](https://ghp-xyz-8050.app.github.dev)
 [![GitHub](https://img.shields.io/github/stars/YOUR_USERNAME/manufacturing-ecommerce-analysis?style=social)](https://github.com/YOUR_USERNAME/manufacturing-ecommerce-analysis)
 
 **Interactive dashboard** analyzing U.S. Census Bureau data on how e-commerce transformed manufacturing shipments across 12 NAICS industries from 1999-2015.
