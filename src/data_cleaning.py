@@ -2,7 +2,6 @@ import os
 import pandas as pd
 import numpy as np
 import re
-
 def clean_manufacturing_data(file_path="data/raw/table_1.csv"):
     """Load table_1.csv and return cleaned long-format DataFrame"""
 
@@ -22,45 +21,25 @@ def clean_manufacturing_data(file_path="data/raw/table_1.csv"):
     # Extract shipment columns
     total_cols = df_raw.iloc[0::2, 2::4].values.flatten()
     ecommerce_cols = df_raw.iloc[0::2, 3::4].values.flatten()
+
     # Convert to numeric safely
-     total_cols = pd.to_numeric(total_cols, errors="coerce")
-     ecommerce_cols = pd.to_numeric(ecommerce_cols, errors="coerce")
+    total_cols = pd.to_numeric(total_cols, errors="coerce")
+    ecommerce_cols = pd.to_numeric(ecommerce_cols, errors="coerce")
 
-# Ensure equal lengths (Census tables are messy)
- min_len = min(
-    len(naics_codes),
-    len(industry_names),
-    len(total_cols),
-    len(ecommerce_cols)
-)
+    # Ensure equal lengths
+    min_len = min(
+        len(naics_codes),
+        len(industry_names),
+        len(total_cols),
+        len(ecommerce_cols)
+    )
 
-df = pd.DataFrame({
-    "naics": naics_codes.iloc[:min_len].values,
-    "industry": industry_names.iloc[:min_len].values,
-    "total_shipments": total_cols[:min_len],
-    "ecommerce_shipments": ecommerce_cols[:min_len]
-})
-# Convert to numeric safely
-total_cols = pd.to_numeric(total_cols, errors="coerce")
-ecommerce_cols = pd.to_numeric(ecommerce_cols, errors="coerce")
-
-# Ensure equal lengths (Census tables are messy)
-min_len = min(
-    len(naics_codes),
-    len(industry_names),
-    len(total_cols),
-    len(ecommerce_cols)
-)
-
-df = pd.DataFrame({
-    "naics": naics_codes.iloc[:min_len].values,
-    "industry": industry_names.iloc[:min_len].values,
-    "total_shipments": total_cols[:min_len],
-    "ecommerce_shipments": ecommerce_cols[:min_len]
-})
-
-
- 
+    df = pd.DataFrame({
+        "naics": naics_codes.iloc[:min_len].values,
+        "industry": industry_names.iloc[:min_len].values,
+        "total_shipments": total_cols[:min_len],
+        "ecommerce_shipments": ecommerce_cols[:min_len]
+    })
 
     # Convert to long format
     df_long = pd.DataFrame({
@@ -80,6 +59,7 @@ df = pd.DataFrame({
     df_long = df_long[df_long["total_shipments"] > 0].copy()
 
     return df_long
+
 
 
 if __name__ == "__main__":
