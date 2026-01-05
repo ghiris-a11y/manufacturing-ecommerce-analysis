@@ -1,7 +1,7 @@
  
 # 🏭 U.S. Manufacturing E-commerce Penetration Analysis (1999-2015)
-[![Live Demo](https://img.shields.io/badge/Live-https://ghp-xyz-8050.app.github.dev-blue)](https://ghp-xyz-8050.app.github.dev)
-[![GitHub](https://img.shields.io/github/stars/YOUR_USERNAME/manufacturing-ecommerce-analysis?style=social)](https://github.com/YOUR_USERNAME/manufacturing-ecommerce-analysis)
+
+[![GitHub](https://img.shields.io/github/stars/ghiris-a11y/manufacturing-ecommerce-analysis?style=social)](https://github.com/ghiris-a11y/manufacturing-ecommerce-analysis)
 
 **Interactive dashboard** analyzing U.S. Census Bureau data on how e-commerce transformed manufacturing shipments across 12 NAICS industries from 1999-2015.
 
@@ -22,7 +22,7 @@
 
 ## 🏃‍♂️ Quick Start
 ```bash
-git clone https://github.com/YOUR_USERNAME/manufacturing-ecommerce-analysis
+git clone https://github.com/ghiris-a11y/manufacturing-ecommerce-analysis
 cd manufacturing-ecommerce-analysis
 pip install -r requirements.txt
 python src/data_cleaning.py
