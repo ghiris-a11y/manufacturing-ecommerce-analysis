@@ -56,8 +56,10 @@ def clean_manufacturing_data(file_path="data/raw/table_1.csv"):
     ).round(2)
 
     # Keep valid rows only
-    df_long = df_long[df_long["total_shipments"] > 0].copy()
-
+    df_long = df_long.dropna(subset=["penetration_pct"])
+    print("Rows after cleaning:", len(df_long))
+    print(df_long.head())
+    
     return df_long
 
 
