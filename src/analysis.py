@@ -4,12 +4,20 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 def load_data():
-    return pd.read_csv("data/processed/manufacturing_clean.csv")
+    path = "data/processed/manufacturing_clean.csv"
+    if not os.path.exists(path):
+        raise FileNotFoundError("Processed data not found. Run data cleaning first.")
+    return pd.read_csv(path)
     
 def calculate_growth(df):
-    """Add CAGR and ranking columns"""
     pivot_pen = df.pivot_table('penetration_pct', 'naics', 'year', aggfunc='mean')
-    cagr = ((pivot_pen.iloc[:, -1] / pivot_pen.iloc[:, 0]) ** (1/15) - 1) * 100
+
+    start = pivot_pen.iloc[:, 0].replace(0, pd.NA)
+    end = pivot_pen.iloc[:, -1]
+
+    cagr = ((end / start) ** (1/15) - 1) * 100
+    cagr = cagr.replace([pd.NA, float("inf"), -float("inf")], None)
+
     df['cagr_1999_2015'] = df['naics'].map(cagr)
     return df
 
@@ -30,9 +38,12 @@ def create_figures(df):
     top_ind = df['industry'].value_counts().head(12).index
     heatmap_data = df[df['industry'].isin(top_ind)].pivot_table(
         'penetration_pct', 'industry', 'year', aggfunc='mean')
-    fig2 = px.imshow(heatmap_data.T, 
-                     title='E-commerce Penetration Heatmap: Top Industries',
-                     color_continuous_scale='Viridis')
+    fig2 = px.imshow(
+         heatmap_data,
+         title='E-commerce Penetration Heatmap: Top Industries',
+         color_continuous_scale='Viridis',
+         aspect='auto'
+    )
     
     # 3. Growth ranking
     growth_df = top_growers(df).reset_index()
