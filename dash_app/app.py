@@ -57,7 +57,7 @@ def update_chart(selected_industry):
     )
 
     return fig
-])
+)
 
 @app.callback(
     Output("main-chart", "figure"),
