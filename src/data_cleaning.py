@@ -64,7 +64,7 @@ if __name__ == "__main__":
     # Filter valid data
     df_long = df_long[df_long['total_shipments'] > 0].copy()
     
-    return df_long
+       return df_long
 
 # Run cleaning
 if __name__ == "__main__":
