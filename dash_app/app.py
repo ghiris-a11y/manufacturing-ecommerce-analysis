@@ -5,29 +5,38 @@ import pandas as pd
 import plotly.express as px
 from dash import Dash, dcc, html, Input, Output
 
+
 # --------------------------------------------------
 # Fix Python path so Railway can find src/
 # --------------------------------------------------
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(BASE_DIR)
 
 # --------------------------------------------------
 # Load or generate processed data
 # --------------------------------------------------
-DATA_PATH = "data/processed/manufacturing_clean.csv"
+DATA_PATH = os.path.join("data", "processed", "manufacturing_clean.csv")
 
 if not os.path.exists(DATA_PATH):
     from src.data_cleaning import clean_manufacturing_data
-    os.makedirs("data/processed", exist_ok=True)
+    os.makedirs(os.path.dirname(DATA_PATH), exist_ok=True)
     df_clean = clean_manufacturing_data()
     df_clean.to_csv(DATA_PATH, index=False)
 
+# Load data
 df = pd.read_csv(DATA_PATH)
+
+# --------------------------------------------------
+# Prepare dropdown values safely
+# --------------------------------------------------
+industries = sorted(df["industry"].dropna().unique()) if not df.empty else []
+default_industry = industries[0] if industries else None
 
 # --------------------------------------------------
 # Initialize Dash app
 # --------------------------------------------------
 app = Dash(__name__)
-server = app.server  # required for Railway
+server = app.server  # Required for Railway
 
 # --------------------------------------------------
 # Layout
@@ -38,19 +47,16 @@ app.layout = html.Div(
 
         html.H1(
             "Manufacturing E-commerce Dashboard",
-            style={"textAlign": "center"}
+            style={"textAlign": "center", "marginBottom": "20px"}
         ),
 
         dcc.Dropdown(
             id="industry-dropdown",
-            options=[
-                {"label": i, "value": i}
-                for i in sorted(df["industry"].dropna().unique())
-            ],
-            value=sorted(df["industry"].dropna().unique())[0],
+            options=[{"label": i, "value": i} for i in industries],
+            value=default_industry,
             clearable=False,
             placeholder="Select an industry",
-            style={"marginBottom": "20px"}
+            style={"marginBottom": "30px"}
         ),
 
         dcc.Graph(id="line-chart")
@@ -66,6 +72,19 @@ app.layout = html.Div(
 )
 def update_chart(selected_industry):
 
+    # Handle empty dataset
+    if df.empty:
+        fig = px.line(
+            title="No data available"
+        )
+        fig.update_layout(
+            xaxis_title="Year",
+            yaxis_title="E-commerce Penetration (%)",
+            template="plotly_white"
+        )
+        return fig
+
+    # Handle dropdown logic
     if selected_industry is None:
         df_filtered = df
         title = "E-commerce Penetration (All Industries)"
@@ -92,5 +111,8 @@ def update_chart(selected_industry):
 # Run server
 # --------------------------------------------------
 if __name__ == "__main__":
-    app.run_server(host="0.0.0.0", port=int(os.environ.get("PORT", 8050)))
-
+    app.run_server(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 8050)),
+        debug=False
+    )
