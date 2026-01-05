@@ -22,13 +22,17 @@ app.layout = html.Div([
 ])
 
 @app.callback(
-    Output('main-chart', 'figure'),
-    Input('industry-select', 'value'))
+    Output("main-chart", "figure"),
+    Input("industry-select", "value")
+)
 def update_chart(selected):
-    filtered = df[df['industry'].isin(selected)]
-    fig = px.line(filtered, x='year', y='penetration_pct', color='industry')
+    if not selected:
+        selected = df["industry"].unique()[:5]
+    filtered = df[df["industry"].isin(selected)]
+    fig = px.line(filtered, x="year", y="penetration_pct", color="industry",
+                  title="E-commerce Penetration by Industry")
     return fig
 
-if __name__ == '__main__':
-    app.run_server(debug=True, port=8050)
+if __name__ == "__main__":
+    app.run_server(host="0.0.0.0", port=8050, debug=True)
 
