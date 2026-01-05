@@ -4,8 +4,8 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 def load_data():
-    return pd.read_csv('data/processed/manufacturing_clean.csv')
-
+    return pd.read_csv("data/processed/manufacturing_clean.csv")
+    
 def calculate_growth(df):
     """Add CAGR and ranking columns"""
     pivot_pen = df.pivot_table('penetration_pct', 'naics', 'year', aggfunc='mean')
