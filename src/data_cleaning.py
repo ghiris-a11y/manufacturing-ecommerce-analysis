@@ -1,14 +1,25 @@
+import os   
 import pandas as pd
 import numpy as np
 import re
 
-def clean_manufacturing_data():
+def clean_manufacturing_data(file_path='data/raw/table_1.csv'):
     """Load table_1.csv from data/raw/ and return tidy DataFrame"""
-    
-    file_path = 'data/raw/table_1.csv'
-    
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Put table_1.csv in {file_path}")
+
+    df_raw = pd.read_csv(file_path, header=None)
+    # ... keep your existing parsing logic ...
+
+    return df_long
+
+if __name__ == "__main__":
+    df_clean = clean_manufacturing_data()   # no argument now
+    os.makedirs("data/processed", exist_ok=True)
+    df_clean.to_csv("data/processed/manufacturing_clean.csv", index=False)
+    print(df_clean.head())
+    print(f"Shape: {df_clean.shape}")
+
     # Raw read handles commas in numbers
     df_raw = pd.read_csv(file_path, header=None)
     
@@ -57,7 +68,8 @@ def clean_manufacturing_data():
 
 # Run cleaning
 if __name__ == "__main__":
-    df_clean = clean_manufacturing_data('data/raw/table_1.csv')
-    df_clean.to_csv('data/processed/manufacturing_clean.csv', index=False)
+    df_clean = clean_manufacturing_data()   # no argument now
+    os.makedirs("data/processed", exist_ok=True)
+    df_clean.to_csv("data/processed/manufacturing_clean.csv", index=False)
     print(df_clean.head())
     print(f"Shape: {df_clean.shape}")
