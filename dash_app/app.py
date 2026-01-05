@@ -22,27 +22,47 @@ app = dash.Dash(__name__)
 app.layout = html.Div([
     html.H1("Manufacturing E-commerce Dashboard", style={'textAlign':'center'}),
     
-    dcc.Dropdown(
-        id='industry-select',
-        options=[{'label': i, 'value': i} for i in df['industry'].unique()],
-        value=df['industry'].unique()[:5],
-        multi=True
-    ),
+dcc.Dropdown(
+    id="industry-dropdown",
+    options=[{"label": i, "value": i} for i in sorted(df["industry"].unique())],
+    value=df["industry"].unique()[0],   # 👈 default selection
+    clearable=False
+),
     
     dcc.Graph(id='main-chart')
+@app.callback(
+    Output("line-chart", "figure"),
+    Input("industry-dropdown", "value")
+)
+def update_chart(selected_industry):
+
+    if selected_industry is None:
+        df_filtered = df
+        title = "E-commerce Penetration (All Industries)"
+    else:
+        df_filtered = df[df["industry"] == selected_industry]
+        title = f"E-commerce Penetration: {selected_industry}"
+
+    fig = px.line(
+        df_filtered,
+        x="year",
+        y="penetration_pct",
+        title=title
+    )
+
+    fig.update_layout(
+        xaxis_title="Year",
+        yaxis_title="E-commerce Penetration (%)"
+    )
+
+    return fig
 ])
 
 @app.callback(
     Output("main-chart", "figure"),
     Input("industry-select", "value")
 )
-def update_chart(selected):
-    if not selected:
-        selected = df["industry"].unique()[:5]
-    filtered = df[df["industry"].isin(selected)]
-    fig = px.line(filtered, x="year", y="penetration_pct", color="industry",
-                  title="E-commerce Penetration by Industry")
-    return fig
+
 
 
 if __name__ == "__main__":
