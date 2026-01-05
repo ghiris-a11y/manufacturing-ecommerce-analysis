@@ -20,16 +20,17 @@ df = pd.read_csv('data/processed/manufacturing_clean.csv')
 app = dash.Dash(__name__)
 
 app.layout = html.Div([
-    html.H1("Manufacturing E-commerce Dashboard", style={'textAlign':'center'}),
-    
-dcc.Dropdown(
-    id="industry-dropdown",
-    options=[{"label": i, "value": i} for i in sorted(df["industry"].unique())],
-    value=df["industry"].unique()[0],   # 👈 default selection
-    clearable=False
-),
-    
-    dcc.Graph(id='main-chart')
+    html.H1("Manufacturing E-commerce Dashboard"),
+
+    dcc.Dropdown(
+        id="industry-dropdown",
+        options=[{"label": i, "value": i} for i in sorted(df["industry"].unique())],
+        value=df["industry"].unique()[0],
+        clearable=False
+    ),
+
+    dcc.Graph(id="line-chart")   # 👈 MATCHES callback
+])
 @app.callback(
     Output("line-chart", "figure"),
     Input("industry-dropdown", "value")
