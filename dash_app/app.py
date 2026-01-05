@@ -3,7 +3,8 @@ from dash import dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
 import os
-
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 # Generate data if not present (Railway-safe)
 if not os.path.exists("data/processed/manufacturing_clean.csv"):
     from src.data_cleaning import clean_manufacturing_data
