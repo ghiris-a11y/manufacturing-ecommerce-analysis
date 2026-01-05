@@ -22,8 +22,10 @@
 
 ## 🏃‍♂️ Quick Start
 ```bash
+git clone https://github.com/YOUR_USERNAME/manufacturing-ecommerce-analysis
+cd manufacturing-ecommerce-analysis
 pip install -r requirements.txt
 python src/data_cleaning.py
-python dash_app/app.py
+python dash_app/app.py  
 
 
