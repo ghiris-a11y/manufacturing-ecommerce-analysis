@@ -2,6 +2,16 @@ import dash
 from dash import dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
+import os
+
+# Generate data if not present (Railway-safe)
+if not os.path.exists("data/processed/manufacturing_clean.csv"):
+    from src.data_cleaning import clean_manufacturing_data
+    os.makedirs("data/processed", exist_ok=True)
+    df_clean = clean_manufacturing_data()
+    df_clean.to_csv("data/processed/manufacturing_clean.csv", index=False)
+
+df = pd.read_csv("data/processed/manufacturing_clean.csv")
 
 # Load data
 df = pd.read_csv('data/processed/manufacturing_clean.csv')
@@ -33,7 +43,6 @@ def update_chart(selected):
                   title="E-commerce Penetration by Industry")
     return fig
 
-import os
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8050))
