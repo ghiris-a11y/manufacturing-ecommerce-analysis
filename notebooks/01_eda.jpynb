@@ -19,3 +19,4 @@ print(f"Overall penetration 2015: {df[df.year==2015]['penetration_pct'].mean():.
 figs = create_figures(df_growth)
 for fig in figs:
     fig.show()
+
