@@ -1,0 +1,358 @@
+industry,year,ecommerce_value
+Food manufacturing,2015,469537.0
+Food manufacturing,2014,467112.0
+Food manufacturing,2013,417687.0
+Food manufacturing,2012,385649.0
+Food manufacturing,2011,340436.0
+Food manufacturing,2010,300280.0
+Food manufacturing,2009,262608.0
+Food manufacturing,2008,247132.0
+Food manufacturing,2007,203693.0
+Food manufacturing,2006,153996.0
+Food manufacturing,2005,99090.0
+Food manufacturing,2004,64121.0
+Food manufacturing,2003,59576.0
+Food manufacturing,2002,51094.0
+Food manufacturing,2001,53556.0
+Food manufacturing,2000,54837.0
+Food manufacturing,1999,45757.0
+Beverage and tobacco product manufacturing,2015,113444.0
+Beverage and tobacco product manufacturing,2014,102220.0
+Beverage and tobacco product manufacturing,2013,102221.0
+Beverage and tobacco product manufacturing,2012,97299.0
+Beverage and tobacco product manufacturing,2011,85357.0
+Beverage and tobacco product manufacturing,2010,82329.0
+Beverage and tobacco product manufacturing,2009,77180.0
+Beverage and tobacco product manufacturing,2008,67894.0
+Beverage and tobacco product manufacturing,2007,72038.0
+Beverage and tobacco product manufacturing,2006,68046.0
+Beverage and tobacco product manufacturing,2005,60651.0
+Beverage and tobacco product manufacturing,2004,52783.0
+Beverage and tobacco product manufacturing,2003,46998.0
+Beverage and tobacco product manufacturing,2002,45419.0
+Beverage and tobacco product manufacturing,2001,45665.0
+Beverage and tobacco product manufacturing,2000,42862.0
+Beverage and tobacco product manufacturing,1999,35138.0
+Textile mills,2015,18734.0
+Textile mills,2014,18329.0
+Textile mills,2013,16861.0
+Textile mills,2012,13899.0
+Textile mills,2011,14974.0
+Textile mills,2010,15505.0
+Textile mills,2009,12589.0
+Textile mills,2008,13186.0
+Textile mills,2007,14494.0
+Textile mills,2006,12377.0
+Textile mills,2005,7512.0
+Textile mills,2004,4416.0
+Textile mills,2003,3639.0
+Textile mills,2002,3977.0
+Textile mills,2001,4435.0
+Textile mills,2000,5214.0
+Textile mills,1999,6016.0
+Textile product mills,2015,15247.0
+Textile product mills,2014,14416.0
+Textile product mills,2013,12710.0
+Textile product mills,2012,11485.0
+Textile product mills,2011,10805.0
+Textile product mills,2010,9804.0
+Textile product mills,2009,10019.0
+Textile product mills,2008,11723.0
+Textile product mills,2007,13470.0
+Textile product mills,2006,11588.0
+Textile product mills,2005,7189.0
+Textile product mills,2004,8472.0
+Textile product mills,2003,7244.0
+Textile product mills,2002,7491.0
+Textile product mills,2001,7409.0
+Textile product mills,2000,5800.0
+Textile product mills,1999,7284.0
+Apparel manufacturing,2015,6114.0
+Apparel manufacturing,2014,5993.0
+Apparel manufacturing,2013,4618.0
+Apparel manufacturing,2012,4977.0
+Apparel manufacturing,2011,5135.0
+Apparel manufacturing,2010,5159.0
+Apparel manufacturing,2009,5179.0
+Apparel manufacturing,2008,5938.0
+Apparel manufacturing,2007,7072.0
+Apparel manufacturing,2006,9182.0
+Apparel manufacturing,2005,8908.0
+Apparel manufacturing,2004,8694.0
+Apparel manufacturing,2003,9137.0
+Apparel manufacturing,2002,9726.0
+Apparel manufacturing,2001,10652.0
+Apparel manufacturing,2000,12063.0
+Apparel manufacturing,1999,16485.0
+Leather and allied product manufacturing,2015,2248.0
+Leather and allied product manufacturing,2014,1911.0
+Leather and allied product manufacturing,2013,1693.0
+Leather and allied product manufacturing,2012,1542.0
+Leather and allied product manufacturing,2011,1405.0
+Leather and allied product manufacturing,2010,1128.0
+Leather and allied product manufacturing,2009,1102.0
+Leather and allied product manufacturing,2008,1095.0
+Leather and allied product manufacturing,2007,1281.0
+Leather and allied product manufacturing,2006,926.0
+Leather and allied product manufacturing,2005,826.0
+Leather and allied product manufacturing,2004,611.0
+Leather and allied product manufacturing,2003,653.0
+Leather and allied product manufacturing,2002,783.0
+Leather and allied product manufacturing,2001,1438.0
+Leather and allied product manufacturing,2000,2122.0
+Leather and allied product manufacturing,1999,2336.0
+Wood product manufacturing,2015,43309.0
+Wood product manufacturing,2014,40379.0
+Wood product manufacturing,2013,35084.0
+Wood product manufacturing,2012,25997.0
+Wood product manufacturing,2011,21805.0
+Wood product manufacturing,2010,19712.0
+Wood product manufacturing,2009,16538.0
+Wood product manufacturing,2008,19375.0
+Wood product manufacturing,2007,19468.0
+Wood product manufacturing,2006,14960.0
+Wood product manufacturing,2005,12248.0
+Wood product manufacturing,2004,7974.0
+Wood product manufacturing,2003,5753.0
+Wood product manufacturing,2002,4567.0
+Wood product manufacturing,2001,4919.0
+Wood product manufacturing,2000,5957.0
+Wood product manufacturing,1999,4275.0
+Paper manufacturing,2015,127309.0
+Paper manufacturing,2014,126639.0
+Paper manufacturing,2013,116715.0
+Paper manufacturing,2012,98839.0
+Paper manufacturing,2011,86897.0
+Paper manufacturing,2010,78953.0
+Paper manufacturing,2009,69312.0
+Paper manufacturing,2008,67810.0
+Paper manufacturing,2007,62644.0
+Paper manufacturing,2006,40842.0
+Paper manufacturing,2005,30579.0
+Paper manufacturing,2004,19631.0
+Paper manufacturing,2003,18683.0
+Paper manufacturing,2002,18385.0
+Paper manufacturing,2001,20208.0
+Paper manufacturing,2000,20617.0
+Paper manufacturing,1999,15312.0
+Printing and related support activites,2015,39782.0
+Printing and related support activites,2014,38364.0
+Printing and related support activites,2013,37014.0
+Printing and related support activites,2012,32441.0
+Printing and related support activites,2011,32659.0
+Printing and related support activites,2010,29105.0
+Printing and related support activites,2009,26274.0
+Printing and related support activites,2008,29993.0
+Printing and related support activites,2007,25649.0
+Printing and related support activites,2006,19181.0
+Printing and related support activites,2005,15592.0
+Printing and related support activites,2004,8259.0
+Printing and related support activites,2003,4452.0
+Printing and related support activites,2002,4725.0
+Printing and related support activites,2001,5885.0
+Printing and related support activites,2000,5966.0
+Printing and related support activites,1999,7319.0
+Petroleum and coal products manufacturing,2015,300561.0
+Petroleum and coal products manufacturing,2014,463379.0
+Petroleum and coal products manufacturing,2013,487594.0
+Petroleum and coal products manufacturing,2012,446068.0
+Petroleum and coal products manufacturing,2011,441837.0
+Petroleum and coal products manufacturing,2010,328817.0
+Petroleum and coal products manufacturing,2009,219546.0
+Petroleum and coal products manufacturing,2008,339211.0
+Petroleum and coal products manufacturing,2007,195309.0
+Petroleum and coal products manufacturing,2006,160177.0
+Petroleum and coal products manufacturing,2005,130869.0
+Petroleum and coal products manufacturing,2004,77527.0
+Petroleum and coal products manufacturing,2003,51586.0
+Petroleum and coal products manufacturing,2002,25523.0
+Petroleum and coal products manufacturing,2001,16312.0
+Petroleum and coal products manufacturing,2000,16647.0
+Petroleum and coal products manufacturing,1999,19881.0
+Chemical manufacturing,2015,444444.0
+Chemical manufacturing,2014,460879.0
+Chemical manufacturing,2013,426671.0
+Chemical manufacturing,2012,399590.0
+Chemical manufacturing,2011,365155.0
+Chemical manufacturing,2010,313317.0
+Chemical manufacturing,2009,263587.0
+Chemical manufacturing,2008,296059.0
+Chemical manufacturing,2007,252390.0
+Chemical manufacturing,2006,203168.0
+Chemical manufacturing,2005,173747.0
+Chemical manufacturing,2004,102967.0
+Chemical manufacturing,2003,85186.0
+Chemical manufacturing,2002,68674.0
+Chemical manufacturing,2001,54041.0
+Chemical manufacturing,2000,52974.0
+Chemical manufacturing,1999,58827.0
+Plastics and rubber products manufacturing,2015,142138.0
+Plastics and rubber products manufacturing,2014,134889.0
+Plastics and rubber products manufacturing,2013,122231.0
+Plastics and rubber products manufacturing,2012,107807.0
+Plastics and rubber products manufacturing,2011,94519.0
+Plastics and rubber products manufacturing,2010,82925.0
+Plastics and rubber products manufacturing,2009,69935.0
+Plastics and rubber products manufacturing,2008,72858.0
+Plastics and rubber products manufacturing,2007,62188.0
+Plastics and rubber products manufacturing,2006,48686.0
+Plastics and rubber products manufacturing,2005,43123.0
+Plastics and rubber products manufacturing,2004,33220.0
+Plastics and rubber products manufacturing,2003,26954.0
+Plastics and rubber products manufacturing,2002,23953.0
+Plastics and rubber products manufacturing,2001,27324.0
+Plastics and rubber products manufacturing,2000,28400.0
+Plastics and rubber products manufacturing,1999,27795.0
+Nonmetallic mineral product manufacturing,2015,53974.0
+Nonmetallic mineral product manufacturing,2014,50406.0
+Nonmetallic mineral product manufacturing,2013,45860.0
+Nonmetallic mineral product manufacturing,2012,38167.0
+Nonmetallic mineral product manufacturing,2011,30988.0
+Nonmetallic mineral product manufacturing,2010,28053.0
+Nonmetallic mineral product manufacturing,2009,24250.0
+Nonmetallic mineral product manufacturing,2008,26621.0
+Nonmetallic mineral product manufacturing,2007,23173.0
+Nonmetallic mineral product manufacturing,2006,20726.0
+Nonmetallic mineral product manufacturing,2005,16469.0
+Nonmetallic mineral product manufacturing,2004,10850.0
+Nonmetallic mineral product manufacturing,2003,8631.0
+Nonmetallic mineral product manufacturing,2002,7144.0
+Nonmetallic mineral product manufacturing,2001,7887.0
+Nonmetallic mineral product manufacturing,2000,8174.0
+Nonmetallic mineral product manufacturing,1999,7282.0
+Primary metal manufacturing,2015,154016.0
+Primary metal manufacturing,2014,172340.0
+Primary metal manufacturing,2013,152193.0
+Primary metal manufacturing,2012,145999.0
+Primary metal manufacturing,2011,140088.0
+Primary metal manufacturing,2010,112076.0
+Primary metal manufacturing,2009,68168.0
+Primary metal manufacturing,2008,109316.0
+Primary metal manufacturing,2007,80850.0
+Primary metal manufacturing,2006,59376.0
+Primary metal manufacturing,2005,47608.0
+Primary metal manufacturing,2004,33410.0
+Primary metal manufacturing,2003,12578.0
+Primary metal manufacturing,2002,12828.0
+Primary metal manufacturing,2001,14274.0
+Primary metal manufacturing,2000,15403.0
+Primary metal manufacturing,1999,15470.0
+Fabricated metal product manufacturing,2015,179690.0
+Fabricated metal product manufacturing,2014,177055.0
+Fabricated metal product manufacturing,2013,161245.0
+Fabricated metal product manufacturing,2012,138360.0
+Fabricated metal product manufacturing,2011,125931.0
+Fabricated metal product manufacturing,2010,107911.0
+Fabricated metal product manufacturing,2009,89201.0
+Fabricated metal product manufacturing,2008,98342.0
+Fabricated metal product manufacturing,2007,84030.0
+Fabricated metal product manufacturing,2006,64109.0
+Fabricated metal product manufacturing,2005,50661.0
+Fabricated metal product manufacturing,2004,33992.0
+Fabricated metal product manufacturing,2003,23735.0
+Fabricated metal product manufacturing,2002,21427.0
+Fabricated metal product manufacturing,2001,24168.0
+Fabricated metal product manufacturing,2000,25798.0
+Fabricated metal product manufacturing,1999,29509.0
+Machinery manufacturing,2015,242437.0
+Machinery manufacturing,2014,249857.0
+Machinery manufacturing,2013,215920.0
+Machinery manufacturing,2012,217991.0
+Machinery manufacturing,2011,177872.0
+Machinery manufacturing,2010,150834.0
+Machinery manufacturing,2009,118721.0
+Machinery manufacturing,2008,129569.0
+Machinery manufacturing,2007,111074.0
+Machinery manufacturing,2006,93763.0
+Machinery manufacturing,2005,72390.0
+Machinery manufacturing,2004,52292.0
+Machinery manufacturing,2003,34797.0
+Machinery manufacturing,2002,30390.0
+Machinery manufacturing,2001,35670.0
+Machinery manufacturing,2000,40441.0
+Machinery manufacturing,1999,48452.0
+Computer and electronic product manufacturing,2015,180879.0
+Computer and electronic product manufacturing,2014,170665.0
+Computer and electronic product manufacturing,2013,153710.0
+Computer and electronic product manufacturing,2012,172745.0
+Computer and electronic product manufacturing,2011,169484.0
+Computer and electronic product manufacturing,2010,155903.0
+Computer and electronic product manufacturing,2009,134103.0
+Computer and electronic product manufacturing,2008,148576.0
+Computer and electronic product manufacturing,2007,142777.0
+Computer and electronic product manufacturing,2006,120947.0
+Computer and electronic product manufacturing,2005,113704.0
+Computer and electronic product manufacturing,2004,76197.0
+Computer and electronic product manufacturing,2003,67476.0
+Computer and electronic product manufacturing,2002,73406.0
+Computer and electronic product manufacturing,2001,73221.0
+Computer and electronic product manufacturing,2000,77933.0
+Computer and electronic product manufacturing,1999,65336.0
+"Electrical equipment, appliance, and component manufacturing",2015,78758.0
+"Electrical equipment, appliance, and component manufacturing",2014,74065.0
+"Electrical equipment, appliance, and component manufacturing",2013,68096.0
+"Electrical equipment, appliance, and component manufacturing",2012,64166.0
+"Electrical equipment, appliance, and component manufacturing",2011,55544.0
+"Electrical equipment, appliance, and component manufacturing",2010,49866.0
+"Electrical equipment, appliance, and component manufacturing",2009,42354.0
+"Electrical equipment, appliance, and component manufacturing",2008,44442.0
+"Electrical equipment, appliance, and component manufacturing",2007,40737.0
+"Electrical equipment, appliance, and component manufacturing",2006,34211.0
+"Electrical equipment, appliance, and component manufacturing",2005,30602.0
+"Electrical equipment, appliance, and component manufacturing",2004,25177.0
+"Electrical equipment, appliance, and component manufacturing",2003,23722.0
+"Electrical equipment, appliance, and component manufacturing",2002,23043.0
+"Electrical equipment, appliance, and component manufacturing",2001,27845.0
+"Electrical equipment, appliance, and component manufacturing",2000,30003.0
+"Electrical equipment, appliance, and component manufacturing",1999,27067.0
+Transportation equipment manufacturing,2015,782615.0
+Transportation equipment manufacturing,2014,738255.0
+Transportation equipment manufacturing,2013,640709.0
+Transportation equipment manufacturing,2012,512940.0
+Transportation equipment manufacturing,2011,422036.0
+Transportation equipment manufacturing,2010,406408.0
+Transportation equipment manufacturing,2009,318687.0
+Transportation equipment manufacturing,2008,378464.0
+Transportation equipment manufacturing,2007,411782.0
+Transportation equipment manufacturing,2006,383560.0
+Transportation equipment manufacturing,2005,381600.0
+Transportation equipment manufacturing,2004,346473.0
+Transportation equipment manufacturing,2003,327401.0
+Transportation equipment manufacturing,2002,297280.0
+Transportation equipment manufacturing,2001,264326.0
+Transportation equipment manufacturing,2000,281396.0
+Transportation equipment manufacturing,1999,268667.0
+Furniture and related product manufacturing,2015,38621.0
+Furniture and related product manufacturing,2014,35349.0
+Furniture and related product manufacturing,2013,31031.0
+Furniture and related product manufacturing,2012,29962.0
+Furniture and related product manufacturing,2011,27006.0
+Furniture and related product manufacturing,2010,23398.0
+Furniture and related product manufacturing,2009,20685.0
+Furniture and related product manufacturing,2008,24722.0
+Furniture and related product manufacturing,2007,22483.0
+Furniture and related product manufacturing,2006,18187.0
+Furniture and related product manufacturing,2005,16233.0
+Furniture and related product manufacturing,2004,11264.0
+Furniture and related product manufacturing,2003,9983.0
+Furniture and related product manufacturing,2002,8082.0
+Furniture and related product manufacturing,2001,9348.0
+Furniture and related product manufacturing,2000,8400.0
+Furniture and related product manufacturing,1999,7623.0
+Miscellaneous manufacturing,2015,73076.0
+Miscellaneous manufacturing,2014,69813.0
+Miscellaneous manufacturing,2013,65833.0
+Miscellaneous manufacturing,2012,58826.0
+Miscellaneous manufacturing,2011,54028.0
+Miscellaneous manufacturing,2010,48974.0
+Miscellaneous manufacturing,2009,41495.0
+Miscellaneous manufacturing,2008,38491.0
+Miscellaneous manufacturing,2007,32821.0
+Miscellaneous manufacturing,2006,28790.0
+Miscellaneous manufacturing,2005,24251.0
+Miscellaneous manufacturing,2004,17844.0
+Miscellaneous manufacturing,2003,14482.0
+Miscellaneous manufacturing,2002,14068.0
+Miscellaneous manufacturing,2001,15644.0
+Miscellaneous manufacturing,2000,14800.0
+Miscellaneous manufacturing,1999,13732.0
