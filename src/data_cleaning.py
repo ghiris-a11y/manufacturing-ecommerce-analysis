@@ -4,84 +4,67 @@ import numpy as np
 import re
 
 
+# src/data_cleaning.py
+
 import pandas as pd
 import os
-import re
 
 RAW_PATH = "data/raw/table_1.csv"
 OUT_PATH = "data/processed/manufacturing_clean.csv"
 
 def clean_manufacturing_data():
     print("Reading raw CSV...")
-    
-    # Read raw file WITHOUT headers
-    df = pd.read_csv(RAW_PATH, header=None)
+    df = pd.read_csv(RAW_PATH)
 
-    # --- STEP 1: Identify header rows ---
-    year_row = 3        # contains years like 2015, 2014 revised, etc.
-    subheader_row = 4   # contains Total / E-commerce
-    data_start = 7      # first NAICS row starts here
+    # Row 0 = years, Row 1 = Total / E-commerce
+    year_row = df.iloc[0]
+    type_row = df.iloc[1]
 
-    years = df.iloc[year_row].ffill()
-    subs = df.iloc[subheader_row]
+    # Build column mapping
+    col_map = {}
+    current_year = None
 
-    # --- STEP 2: Build usable column names ---
-    columns = []
-    for y, s in zip(years, subs):
-        if pd.isna(y):
-            columns.append(None)
-        else:
-            y = str(y).strip()
-            s = str(s).strip()
-            columns.append(f"{y}_{s}")
+    for col in df.columns[2:]:
+        year_val = year_row[col]
+        type_val = type_row[col]
 
-    df.columns = columns
+        if pd.notna(year_val):
+            # Handle "2014 revised"
+            current_year = str(year_val).split()[0]
 
-    # --- STEP 3: Keep only needed columns ---
-    keep_cols = ["NAICS", "Description"]
-    ecommerce_cols = [
-        c for c in df.columns
-        if c and "E-commerce" in c
-    ]
+        if type_val == "E-commerce":
+            col_map[col] = current_year
 
-    df = df.iloc[data_start:].copy()
-    df = df[["NAICS", "Description"] + ecommerce_cols]
+    # Keep only relevant rows (actual industries)
+    data = df.iloc[4:].copy()
+    data = data[data["NAICS Code"].notna()]
+    data["NAICS Code"] = data["NAICS Code"].astype(int)
 
-    df.columns = ["naics", "industry"] + ecommerce_cols
+    records = []
 
-    # --- STEP 4: Clean values ---
-    for col in ecommerce_cols:
-        df[col] = (
-            df[col]
-            .astype(str)
-            .str.replace(",", "", regex=False)
-            .astype(float)
-        )
+    for _, row in data.iterrows():
+        industry = row["Description"]
 
-    # --- STEP 5: Convert to long format ---
-    df_long = df.melt(
-        id_vars=["industry"],
-        value_vars=ecommerce_cols,
-        var_name="year",
-        value_name="ecommerce_value"
-    )
+        for col, year in col_map.items():
+            value = row[col]
+            if pd.notna(value):
+                records.append({
+                    "industry": industry,
+                    "year": int(year),
+                    "ecommerce_value": float(str(value).replace(",", ""))
+                })
 
-    # Extract year number
-    df_long["year"] = df_long["year"].str.extract(r"(\d{4})").astype(int)
+    clean_df = pd.DataFrame(records)
 
-    df_long = df_long.dropna(subset=["ecommerce_value"])
-
-    print("Rows after cleaning:", len(df_long))
-    print(df_long.head())
-
-    # --- STEP 6: Save ---
     os.makedirs("data/processed", exist_ok=True)
-    df_long.to_csv(OUT_PATH, index=False)
+    clean_df.to_csv(OUT_PATH, index=False)
 
+    print("Rows after cleaning:", len(clean_df))
+    print(clean_df.head())
     print("CSV GENERATED:", OUT_PATH)
-    return df_long
+
+    return clean_df
 
 
 if __name__ == "__main__":
     clean_manufacturing_data()
-
