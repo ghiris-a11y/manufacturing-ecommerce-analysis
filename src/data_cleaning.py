@@ -35,8 +35,14 @@ def clean_manufacturing_data(file_path="data/raw/table_1.csv"):
 
 
 if __name__ == "__main__":
+
+    os.makedirs("data/raw", exist_ok=True)
     os.makedirs("data/processed", exist_ok=True)
+
     df_clean = clean_manufacturing_data()
     df_clean.to_csv("data/processed/manufacturing_clean.csv", index=False)
+
+    print("CSV GENERATED:", os.path.exists("data/processed/manufacturing_clean.csv"))
+    print("Rows:", len(df_clean))
 
 
