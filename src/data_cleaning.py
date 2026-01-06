@@ -3,71 +3,40 @@ import pandas as pd
 import numpy as np
 import re
 def clean_manufacturing_data(file_path="data/raw/table_1.csv"):
-    """Load table_1.csv and return cleaned long-format DataFrame"""
+    # Load raw Census table
+    df = pd.read_csv(file_path)
 
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Put table_1.csv in {file_path}")
+    # Rename first column to something usable
+    df.rename(columns={df.columns[0]: "metric"}, inplace=True)
 
-    # Load raw file
-    df_raw = pd.read_csv(file_path, header=None)
+    # Keep only the penetration row
+    df = df[df["metric"].str.contains("E-commerce", case=False, na=False)]
 
-    # Extract NAICS codes and industry names
-    naics_codes = df_raw.iloc[0::2, 0].dropna().astype(str)
-    industry_names = df_raw.iloc[0::2, 1].dropna().astype(str)
-
-    # Years (1999–2015)
-    years = list(range(1999, 2016))
-
-    # Extract shipment columns
-    total_cols = df_raw.iloc[0::2, 2::4].values.flatten()
-    ecommerce_cols = df_raw.iloc[0::2, 3::4].values.flatten()
-
-    # Convert to numeric safely
-    total_cols = pd.to_numeric(total_cols, errors="coerce")
-    ecommerce_cols = pd.to_numeric(ecommerce_cols, errors="coerce")
-
-    # Ensure equal lengths
-    min_len = min(
-        len(naics_codes),
-        len(industry_names),
-        len(total_cols),
-        len(ecommerce_cols)
+    # Drop metric column and reshape
+    df_long = df.drop(columns=["metric"]).melt(
+        var_name="year",
+        value_name="penetration_pct"
     )
 
-    df = pd.DataFrame({
-        "naics": naics_codes.iloc[:min_len].values,
-        "industry": industry_names.iloc[:min_len].values,
-        "total_shipments": total_cols[:min_len],
-        "ecommerce_shipments": ecommerce_cols[:min_len]
-    })
+    # Clean data types
+    df_long["year"] = pd.to_numeric(df_long["year"], errors="coerce")
+    df_long["penetration_pct"] = pd.to_numeric(df_long["penetration_pct"], errors="coerce")
 
-    # Convert to long format
-    df_long = pd.DataFrame({
-        "naics": np.repeat(df["naics"], len(years)),
-        "industry": np.repeat(df["industry"], len(years)),
-        "year": np.tile(years, len(df)),
-        "total_shipments": np.tile(df["total_shipments"].fillna(0), len(years)),
-        "ecommerce_shipments": np.tile(df["ecommerce_shipments"].fillna(0), len(years))
-    })
+    # Drop invalid rows
+    df_long = df_long.dropna()
 
-    # Penetration %
-    df_long["penetration_pct"] = (
-        df_long["ecommerce_shipments"] / df_long["total_shipments"] * 100
-    ).round(2)
+    # Add industry label (single industry dataset)
+    df_long["industry"] = "Manufacturing (Total)"
 
-    # Keep valid rows only
-    df_long = df_long.dropna(subset=["penetration_pct"])
     print("Rows after cleaning:", len(df_long))
     print(df_long.head())
-    
+
     return df_long
 
 
-
 if __name__ == "__main__":
-    df_clean = clean_manufacturing_data()
     os.makedirs("data/processed", exist_ok=True)
+    df_clean = clean_manufacturing_data()
     df_clean.to_csv("data/processed/manufacturing_clean.csv", index=False)
-    print(df_clean.head())
-    print("Shape:", df_clean.shape)
+
 
