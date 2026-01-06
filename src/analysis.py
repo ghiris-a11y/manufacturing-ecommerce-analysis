@@ -3,6 +3,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+# src/analysis.py
+
+import os
+import pandas as pd
+import plotly.express as px
+
+
 def load_data():
     """
     Load processed manufacturing e-commerce data
@@ -11,55 +18,62 @@ def load_data():
     if not os.path.exists(path):
         raise FileNotFoundError("Processed data not found. Run data_cleaning.py first.")
     
-    df = pd.read_csv(path)
-    return df
+    return pd.read_csv(path)
 
 
 def calculate_growth_metrics(df):
     """
-    Calculate overall growth metrics for manufacturing
+    Calculate growth metrics for TOTAL manufacturing e-commerce value
     """
-    df = df.sort_values("year")
+    df_total = (
+        df.groupby("year", as_index=False)["ecommerce_value"]
+        .sum()
+        .sort_values("year")
+    )
 
-    start_val = df.iloc[0]["penetration_pct"]
-    end_val = df.iloc[-1]["penetration_pct"]
-    years = df["year"].nunique() - 1
+    start_val = df_total.iloc[0]["ecommerce_value"]
+    end_val = df_total.iloc[-1]["ecommerce_value"]
+    years = df_total["year"].nunique() - 1
 
-    if start_val <= 0 or years <= 0:
-        cagr = None
-    else:
+    cagr = None
+    if start_val > 0 and years > 0:
         cagr = ((end_val / start_val) ** (1 / years) - 1) * 100
 
     return {
-        "start_year": int(df.iloc[0]["year"]),
-        "end_year": int(df.iloc[-1]["year"]),
-        "start_penetration": start_val,
-        "end_penetration": end_val,
-        "cagr_percent": round(cagr, 2) if cagr is not None else None
+        "start_year": int(df_total.iloc[0]["year"]),
+        "end_year": int(df_total.iloc[-1]["year"]),
+        "start_value": round(start_val, 2),
+        "end_value": round(end_val, 2),
+        "cagr_percent": round(cagr, 2) if cagr else None
     }
 
 
 def create_figures(df):
     """
-    Create all figures used in dashboard or analysis
+    Create figures for analysis
     """
 
-    # 1. Line chart: E-commerce penetration over time
-    fig_line = px.line(
-        df,
-        x="year",
-        y="penetration_pct",
-        title="Manufacturing E-commerce Penetration (1999–2015)",
-        markers=True
-    )
-    fig_line.update_layout(
-        xaxis_title="Year",
-        yaxis_title="E-commerce Penetration (%)"
+    df_total = (
+        df.groupby("year", as_index=False)["ecommerce_value"]
+        .sum()
+        .sort_values("year")
     )
 
-    return {
-        "trend_chart": fig_line
-    }
+    fig = px.line(
+        df_total,
+        x="year",
+        y="ecommerce_value",
+        markers=True,
+        title="Total U.S. Manufacturing E-commerce Value (1999–2015)"
+    )
+
+    fig.update_layout(
+        xaxis_title="Year",
+        yaxis_title="E-commerce Value (Million USD)",
+        template="plotly_white"
+    )
+
+    return fig
 
 
 if __name__ == "__main__":
@@ -67,12 +81,11 @@ if __name__ == "__main__":
     metrics = calculate_growth_metrics(df)
 
     print("Manufacturing E-commerce Growth Summary")
-    print("--------------------------------------")
+    print("-------------------------------------")
     print(f"Period: {metrics['start_year']}–{metrics['end_year']}")
-    print(f"Start penetration: {metrics['start_penetration']:.2f}%")
-    print(f"End penetration: {metrics['end_penetration']:.2f}%")
+    print(f"Start value: {metrics['start_value']}")
+    print(f"End value: {metrics['end_value']}")
     print(f"CAGR: {metrics['cagr_percent']}%")
 
-    figs = create_figures(df)
-    figs["trend_chart"].show()
-
+    fig = create_figures(df)
+    fig.show()
