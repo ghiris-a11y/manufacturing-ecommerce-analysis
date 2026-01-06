@@ -16,46 +16,52 @@ def clean_manufacturing_data():
     print("Reading raw CSV...")
     df = pd.read_csv(RAW_PATH, header=None)
 
-    # ---- STEP 1: Extract years from header row ----
-    # Row 3 contains years (2015, 2014 revised, 2013, ..., 1999)
-    year_row = df.iloc[3].astype(str)
+    # =============================
+    # STEP 1: Extract year labels
+    # =============================
+    year_row = df.iloc[3]
+    subheader_row = df.iloc[4]
 
-    years = []
-    for val in year_row:
-        match = re.search(r"(19\d{2}|20\d{2})", val)
-        years.append(match.group(1) if match else None)
+    new_columns = []
 
-    # ---- STEP 2: Extract subheaders (Total / E-commerce) ----
-    subheader_row = df.iloc[4].astype(str)
-
-    columns = []
-    for y, s in zip(years, subheader_row):
-        if y and "E-commerce" in s:
-            columns.append(f"{y}_ecom")
+    for y, s in zip(year_row, subheader_row):
+        if isinstance(y, str):
+            match = re.search(r"(19\d{2}|20\d{2})", y)
         else:
-            columns.append(None)
+            match = None
 
-    # First two columns = NAICS + Industry
-    columns[0] = "naics"
-    columns[1] = "industry"
+        if match and isinstance(s, str) and "E-commerce" in s:
+            new_columns.append(match.group(1))
+        else:
+            new_columns.append(None)
 
-    df.columns = columns
+    # First columns = NAICS + Industry name
+    new_columns[0] = "naics"
+    new_columns[1] = "industry"
 
-    # ---- STEP 3: Drop junk rows above industries ----
+    df.columns = new_columns
+
+    # =============================
+    # STEP 2: Keep only valid rows
+    # =============================
     df = df.iloc[7:].copy()
 
-    # Keep only industry + e-commerce columns
-    keep_cols = ["industry"] + [c for c in df.columns if c and c.endswith("_ecom")]
-    df = df[keep_cols]
+    # Keep industry + year columns
+    year_cols = [c for c in df.columns if c and c.isdigit()]
+    df = df[["industry"] + year_cols]
 
-    # ---- STEP 4: Wide → Long ----
+    # =============================
+    # STEP 3: Wide → Long
+    # =============================
     df_long = df.melt(
         id_vars="industry",
         var_name="year",
         value_name="ecommerce_value"
     )
 
-    df_long["year"] = df_long["year"].str.replace("_ecom", "")
+    # =============================
+    # STEP 4: Clean values
+    # =============================
     df_long["ecommerce_value"] = (
         df_long["ecommerce_value"]
         .astype(str)
@@ -66,13 +72,14 @@ def clean_manufacturing_data():
         df_long["ecommerce_value"], errors="coerce"
     )
 
-    # ---- STEP 5: Clean ----
     df_long = df_long.dropna(subset=["industry", "year", "ecommerce_value"])
 
     print("Rows after cleaning:", len(df_long))
     print(df_long.head())
 
-    # ---- STEP 6: Save ----
+    # =============================
+    # STEP 5: Save
+    # =============================
     os.makedirs("data/processed", exist_ok=True)
     df_long.to_csv(OUT_PATH, index=False)
     print("CSV GENERATED:", OUT_PATH)
@@ -82,3 +89,4 @@ def clean_manufacturing_data():
 
 if __name__ == "__main__":
     clean_manufacturing_data()
+
