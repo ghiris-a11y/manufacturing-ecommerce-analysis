@@ -14,79 +14,79 @@ OUT_PATH = "data/processed/manufacturing_clean.csv"
 
 def clean_manufacturing_data():
     print("Reading raw CSV...")
+
     df = pd.read_csv(RAW_PATH, header=None)
 
-    # =============================
-    # STEP 1: Extract year labels
-    # =============================
-    year_row = df.iloc[3]
-    subheader_row = df.iloc[4]
+    # ---------------------------------
+    # Row definitions (from inspection)
+    # ---------------------------------
+    YEAR_ROW = 3
+    TYPE_ROW = 4
+    DATA_START_ROW = 7
 
-    new_columns = []
+    year_labels = df.iloc[YEAR_ROW]
+    type_labels = df.iloc[TYPE_ROW]
 
-    for y, s in zip(year_row, subheader_row):
-        if isinstance(y, str):
-            match = re.search(r"(19\d{2}|20\d{2})", y)
-        else:
-            match = None
+    # ---------------------------------
+    # Identify E-commerce columns
+    # ---------------------------------
+    ecommerce_cols = []
 
-        if match and isinstance(s, str) and "E-commerce" in s:
-            new_columns.append(match.group(1))
-        else:
-            new_columns.append(None)
+    for idx, (year, typ) in enumerate(zip(year_labels, type_labels)):
+        if isinstance(year, str) and isinstance(typ, str):
+            year_match = re.search(r"(19\d{2}|20\d{2})", year)
+            if year_match and "E-commerce" in typ:
+                ecommerce_cols.append((idx, year_match.group(1)))
 
-    # First columns = NAICS + Industry name
-    new_columns[0] = "naics"
-    new_columns[1] = "industry"
+    if not ecommerce_cols:
+        raise ValueError("No E-commerce columns detected")
 
-    df.columns = new_columns
+    print("Detected E-commerce columns:", ecommerce_cols)
 
-    # =============================
-    # STEP 2: Keep only valid rows
-    # =============================
-    df = df.iloc[7:].copy()
+    # ---------------------------------
+    # Extract data rows
+    # ---------------------------------
+    records = []
 
-    # Keep industry + year columns
-    year_cols = [c for c in df.columns if c and c.isdigit()]
-    df = df[["industry"] + year_cols]
+    for _, row in df.iloc[DATA_START_ROW:].iterrows():
+        industry = row[1]
 
-    # =============================
-    # STEP 3: Wide → Long
-    # =============================
-    df_long = df.melt(
-        id_vars="industry",
-        var_name="year",
-        value_name="ecommerce_value"
-    )
+        if pd.isna(industry):
+            continue
 
-    # =============================
-    # STEP 4: Clean values
-    # =============================
-    df_long["ecommerce_value"] = (
-        df_long["ecommerce_value"]
-        .astype(str)
-        .str.replace(",", "", regex=False)
-    )
+        for col_idx, year in ecommerce_cols:
+            value = row[col_idx]
 
-    df_long["ecommerce_value"] = pd.to_numeric(
-        df_long["ecommerce_value"], errors="coerce"
-    )
+            if pd.isna(value):
+                continue
 
-    df_long = df_long.dropna(subset=["industry", "year", "ecommerce_value"])
+            value = str(value).replace(",", "")
+
+            try:
+                value = float(value)
+            except:
+                continue
+
+            records.append({
+                "industry": industry,
+                "year": int(year),
+                "ecommerce_value": value
+            })
+
+    df_long = pd.DataFrame(records)
 
     print("Rows after cleaning:", len(df_long))
     print(df_long.head())
 
-    # =============================
-    # STEP 5: Save
-    # =============================
+    # ---------------------------------
+    # Save output
+    # ---------------------------------
     os.makedirs("data/processed", exist_ok=True)
     df_long.to_csv(OUT_PATH, index=False)
-    print("CSV GENERATED:", OUT_PATH)
 
+    print("CSV GENERATED:", OUT_PATH)
     return df_long
 
 
 if __name__ == "__main__":
     clean_manufacturing_data()
-
