@@ -4,6 +4,10 @@ import numpy as np
 import re
 
 
+import pandas as pd
+import os
+import re
+
 RAW_PATH = "data/raw/table_1.csv"
 OUT_PATH = "data/processed/manufacturing_clean.csv"
 
