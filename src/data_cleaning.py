@@ -2,47 +2,62 @@ import os
 import pandas as pd
 import numpy as np
 import re
-def clean_manufacturing_data(file_path="data/raw/table_1.csv"):
-    # Load raw Census table
+
+def clean_manufacturing_data(
+    file_path="data/raw/table_1.csv",
+    output_path="data/processed/manufacturing_clean.csv"
+):
+    print("Reading raw CSV...")
     df = pd.read_csv(file_path)
 
-    # Rename first column to something usable
-    df.rename(columns={df.columns[0]: "metric"}, inplace=True)
+    # --- Inspect columns ---
+    df.columns = [c.strip().lower() for c in df.columns]
 
-    # Keep only the penetration row
-    df = df[df["metric"].str.contains("E-commerce", case=False, na=False)]
+    # Expected columns (based on Census table format)
+    # year | industry | ecommerce_percent (or similar)
+    possible_pct_cols = [
+        c for c in df.columns if "percent" in c or "penetration" in c
+    ]
 
-    # Drop metric column and reshape
-    df_long = df.drop(columns=["metric"]).melt(
-        var_name="year",
-        value_name="penetration_pct"
+    if not possible_pct_cols:
+        raise ValueError("No penetration/percent column found")
+
+    pct_col = possible_pct_cols[0]
+
+    # --- Clean & normalize ---
+    df = df.rename(columns={
+        pct_col: "penetration_pct"
+    })
+
+    df["year"] = pd.to_numeric(df["year"], errors="coerce")
+    df["penetration_pct"] = (
+        df["penetration_pct"]
+        .astype(str)
+        .str.replace("%", "", regex=False)
+        .str.strip()
+    )
+    df["penetration_pct"] = pd.to_numeric(
+        df["penetration_pct"], errors="coerce"
     )
 
-    # Clean data types
-    df_long["year"] = pd.to_numeric(df_long["year"], errors="coerce")
-    df_long["penetration_pct"] = pd.to_numeric(df_long["penetration_pct"], errors="coerce")
+    df["industry"] = df["industry"].astype(str).str.strip()
 
-    # Drop invalid rows
-    df_long = df_long.dropna()
+    # --- Drop invalid rows ---
+    df_clean = df.dropna(subset=["year", "penetration_pct", "industry"])
 
-    # Add industry label (single industry dataset)
-    df_long["industry"] = "Manufacturing (Total)"
+    print("Rows after cleaning:", len(df_clean))
+    print(df_clean.head())
 
-    print("Rows after cleaning:", len(df_long))
-    print(df_long.head())
+    # --- Save ---
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df_clean.to_csv(output_path, index=False)
 
-    return df_long
+    print("CSV GENERATED:", os.path.exists(output_path))
+    print("Rows:", len(df_clean))
+
+    return df_clean
 
 
 if __name__ == "__main__":
-
-    os.makedirs("data/raw", exist_ok=True)
-    os.makedirs("data/processed", exist_ok=True)
-
-    df_clean = clean_manufacturing_data()
-    df_clean.to_csv("data/processed/manufacturing_clean.csv", index=False)
-
-    print("CSV GENERATED:", os.path.exists("data/processed/manufacturing_clean.csv"))
-    print("Rows:", len(df_clean))
-
+    clean_manufacturing_data()
 
