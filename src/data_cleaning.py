@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import re
 
-
 def clean_manufacturing_data(
     file_path="data/raw/table_1.csv",
     output_path="data/processed/manufacturing_clean.csv"
@@ -11,30 +10,31 @@ def clean_manufacturing_data(
     print("Reading raw CSV...")
     df = pd.read_csv(file_path)
 
-    # Clean column names
-    df.columns = [str(c).strip().lower() for c in df.columns]
+    # Normalize column names
+    df.columns = [str(c).strip() for c in df.columns]
 
-    # Assume first column is industry
+    # First column = industry
     industry_col = df.columns[0]
 
-    # Remaining columns should be years
-    year_cols = []
-    for c in df.columns[1:]:
-        try:
-            int(c)
-            year_cols.append(c)
-        except:
-            pass
+    # Detect year columns using regex (1999–2015)
+    year_map = {}
+    for col in df.columns[1:]:
+        match = re.search(r"(19|20)\d{2}", col)
+        if match:
+            year_map[col] = int(match.group())
 
-    if not year_cols:
-        raise ValueError("No year columns found (1999–2015 expected)")
+    if not year_map:
+        raise ValueError("No year columns detected in CSV")
 
-    print("Detected year columns:", year_cols[:5], "...")
+    print("Detected year columns:", list(year_map.values())[:5], "...")
 
-    # Convert wide → long
+    # Rename columns to clean year numbers
+    df = df.rename(columns=year_map)
+
+    # Melt to long format
     df_long = df.melt(
         id_vars=[industry_col],
-        value_vars=year_cols,
+        value_vars=list(year_map.values()),
         var_name="year",
         value_name="penetration_pct"
     )
@@ -42,26 +42,28 @@ def clean_manufacturing_data(
     df_long = df_long.rename(columns={industry_col: "industry"})
 
     # Clean values
-    df_long["year"] = pd.to_numeric(df_long["year"], errors="coerce")
     df_long["penetration_pct"] = (
         df_long["penetration_pct"]
         .astype(str)
         .str.replace("%", "", regex=False)
         .str.strip()
     )
+
     df_long["penetration_pct"] = pd.to_numeric(
         df_long["penetration_pct"], errors="coerce"
     )
 
+    df_long["year"] = pd.to_numeric(df_long["year"], errors="coerce")
+
     # Drop invalid rows
     df_long = df_long.dropna(
-        subset=["year", "industry", "penetration_pct"]
+        subset=["industry", "year", "penetration_pct"]
     )
 
     print("Rows after cleaning:", len(df_long))
     print(df_long.head())
 
-    # Save
+    # Save output
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     df_long.to_csv(output_path, index=False)
 
@@ -73,4 +75,3 @@ def clean_manufacturing_data(
 
 if __name__ == "__main__":
     clean_manufacturing_data()
-
