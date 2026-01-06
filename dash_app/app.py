@@ -1,118 +1,23 @@
-import dash
 import os
-import sys
 import pandas as pd
+import dash
+from dash import dcc, html
+from dash.dependencies import Input, Output
 import plotly.express as px
-from dash import Dash, dcc, html, Input, Output
 
+DATA_PATH = "data/processed/manufacturing_clean.csv"
 
-# --------------------------------------------------
-# Fix Python path so Railway can find src/
-# --------------------------------------------------
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.append(BASE_DIR)
+print("=== DASH STARTUP DEBUG ===")
+print("Working directory:", os.getcwd())
+print("Looking for:", DATA_PATH)
+print("File exists:", os.path.exists(DATA_PATH))
 
-# --------------------------------------------------
-# Load or generate processed data
-# --------------------------------------------------
-DATA_PATH = os.path.join("data", "processed", "manufacturing_clean.csv")
+if os.path.exists(DATA_PATH):
+    df = pd.read_csv(DATA_PATH)
+    print("CSV shape:", df.shape)
+    print(df.head())
+else:
+    df = pd.DataFrame()
+    print("CSV NOT FOUND — dashboard will be empty")
 
-if not os.path.exists(DATA_PATH):
-    from src.data_cleaning import clean_manufacturing_data
-    os.makedirs(os.path.dirname(DATA_PATH), exist_ok=True)
-    df_clean = clean_manufacturing_data()
-    df_clean.to_csv(DATA_PATH, index=False)
-
-# Load data
-df = pd.read_csv(DATA_PATH)
-
-# --------------------------------------------------
-# Prepare dropdown values safely
-# --------------------------------------------------
-industries = sorted(df["industry"].dropna().unique()) if not df.empty else []
-default_industry = industries[0] if industries else None
-
-# --------------------------------------------------
-# Initialize Dash app
-# --------------------------------------------------
-app = Dash(__name__)
-server = app.server  # Required for Railway
-
-# --------------------------------------------------
-# Layout
-# --------------------------------------------------
-app.layout = html.Div(
-    style={"width": "90%", "margin": "auto"},
-    children=[
-
-        html.H1(
-            "Manufacturing E-commerce Dashboard",
-            style={"textAlign": "center", "marginBottom": "20px"}
-        ),
-
-        dcc.Dropdown(
-            id="industry-dropdown",
-            options=[{"label": i, "value": i} for i in industries],
-            value=default_industry,
-            clearable=False,
-            placeholder="Select an industry",
-            style={"marginBottom": "30px"}
-        ),
-
-        dcc.Graph(id="line-chart")
-    ]
-)
-
-# --------------------------------------------------
-# Callback
-# --------------------------------------------------
-@app.callback(
-    Output("line-chart", "figure"),
-    Input("industry-dropdown", "value")
-)
-def update_chart(selected_industry):
-
-    # Handle empty dataset
-    if df.empty:
-        fig = px.line(
-            title="No data available"
-        )
-        fig.update_layout(
-            xaxis_title="Year",
-            yaxis_title="E-commerce Penetration (%)",
-            template="plotly_white"
-        )
-        return fig
-
-    # Handle dropdown logic
-    if selected_industry is None:
-        df_filtered = df
-        title = "E-commerce Penetration (All Industries)"
-    else:
-        df_filtered = df[df["industry"] == selected_industry]
-        title = f"E-commerce Penetration: {selected_industry}"
-
-    fig = px.line(
-        df_filtered,
-        x="year",
-        y="penetration_pct",
-        title=title
-    )
-
-    fig.update_layout(
-        xaxis_title="Year",
-        yaxis_title="E-commerce Penetration (%)",
-        template="plotly_white"
-    )
-
-    return fig
-
-# --------------------------------------------------
-# Run server
-# --------------------------------------------------
-if __name__ == "__main__":
-    app.run_server(
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 8050)),
-        debug=False
-    )
+print("==========================")
