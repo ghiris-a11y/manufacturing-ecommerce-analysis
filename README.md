@@ -1,36 +1,57 @@
  
-# 🏭 U.S. Manufacturing E-commerce Penetration Analysis (1999-2015)
+# 🏭 U.S. Manufacturing E-commerce Penetration Analysis (1999–2015)
 
 ## 🚀 Live Dashboard
 
-🔗 **Live App**: https://manufacturing-ecommerce-analysis.up.railway.app
+🔗 **Live App**: https://manufacturing-ecommerce-analysis.up.railway.app  
 [![Railway](https://img.shields.io/badge/Live-Dashboard-success)](https://manufacturing-ecommerce-analysis.up.railway.app)
 
 [![GitHub](https://img.shields.io/github/stars/ghiris-a11y/manufacturing-ecommerce-analysis?style=social)](https://github.com/ghiris-a11y/manufacturing-ecommerce-analysis)
 
-**Interactive dashboard** analyzing U.S. Census Bureau data on how e-commerce transformed manufacturing shipments across 12 NAICS industries from 1999-2015.
+---
 
-## 📊 Key Insights
-- **Overall growth**: E-commerce share rose from ~5% to 15% across manufacturing
-- **Fastest digitizers**: Computer/Electronics, Transportation Equipment led adoption
-- **Laggards**: Furniture, Plastics showed slowest e-commerce penetration
-- Transportation equipment had **highest absolute e-commerce $ growth**
+## 📊 Project Overview
+
+This project analyzes **U.S. Census Bureau manufacturing e-commerce data** to understand how
+e-commerce penetration evolved in the **U.S. manufacturing sector** between **1999 and 2015**.
+
+An interactive Dash dashboard visualizes the **trend of e-commerce penetration (%) over time**
+based on official Census tables.
+
+---
+
+## 📈 Key Insights
+
+- E-commerce penetration in U.S. manufacturing **increased steadily** from 1999 to 2015
+- The data highlights the **structural shift toward digital channels** in manufacturing
+- Clear acceleration is visible in the mid-to-late 2000s
+
+> 📌 Note: This dashboard currently analyzes **aggregate manufacturing data** derived from Census tables.
+
+---
 
 ## 🛠️ Tech Stack
-<div align="center">
-<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-<img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" />
-<img src="https://img.shields.io/badge/Plotly-239120?style=for-the-badge&logo=plotly&logoColor=white" />
-<img src="https://img.shields.io/badge/Dash-119DFF?style=for-the-badge&logo=dash&logoColor=white" />
-</div>
 
+- **Python**
+- **Pandas** – data cleaning & transformation
+- **Plotly** – interactive visualizations
+- **Dash** – web dashboard
+- **Railway** – cloud deployment
 
-## 🏃‍♂️ Quick Start
+---
+
+## 🏃‍♂️ Quick Start (Local)
+
 ```bash
 git clone https://github.com/ghiris-a11y/manufacturing-ecommerce-analysis
 cd manufacturing-ecommerce-analysis
+
 pip install -r requirements.txt
+
+# Generate cleaned dataset
 python src/data_cleaning.py
-python dash_app/app.py  
+
+# Run dashboard
+python dash_app/app.py
 
 
