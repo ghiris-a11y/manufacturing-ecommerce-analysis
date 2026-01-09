@@ -40,7 +40,7 @@ using official Census shipment tables.
 
 > 📌 Note: This dashboard currently focuses on **aggregate manufacturing-level trends** derived from U.S. Census data.
 
-# ✅ 5️⃣ Add a **Metrics Explanation** section (HIGH IMPACT)
+# ✅ **Metrics Explanation** section
 
 This turns your project into an **analytics case study**.
 
