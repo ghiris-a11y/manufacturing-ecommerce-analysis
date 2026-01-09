@@ -19,7 +19,19 @@ An interactive **Dash dashboard** visualizes the **trend of manufacturing e-comm
 using official Census shipment tables.
 
 ---
+---
 
+## 🧩 Dashboard Features
+
+- 📈 **Industry-level e-commerce trends** (1999–2015)
+- 📊 **E-commerce share (% of total shipments)** by industry
+- 🧮 **KPI cards** showing:
+  - Latest e-commerce penetration (%)
+  - Latest e-commerce value
+  - Year-over-year growth
+- 📝 **Annotated insights** highlighting key economic events
+- 🎨 **Custom CSS styling** for clean, modern dashboard layout
+---
 ## 📈 Key Insights
 
 - U.S. manufacturing e-commerce activity **increased steadily** from 1999 to 2015  
@@ -28,6 +40,21 @@ using official Census shipment tables.
 
 > 📌 Note: This dashboard currently focuses on **aggregate manufacturing-level trends** derived from U.S. Census data.
 
+# ✅ 5️⃣ Add a **Metrics Explanation** section (HIGH IMPACT)
+
+This turns your project into an **analytics case study**.
+
+```md
+---
+
+## 📐 Metrics Explained
+
+- **E-commerce Value**: Value of manufacturing shipments conducted via e-commerce (USD millions)
+- **Total Shipments**: Total manufacturing shipment value (USD millions)
+- **E-commerce Share (%)**:
+  
+  ```text
+  (E-commerce Value / Total Shipments) × 100
 ---
 
 ## 🛠️ Tech Stack
@@ -36,6 +63,7 @@ using official Census shipment tables.
 - **Pandas** – data cleaning & transformation
 - **Plotly** – interactive visualizations
 - **Dash** – web dashboard framework
+- **CSS** – custom styling for KPI cards and layout
 - **Railway** – cloud deployment
 
 ---
@@ -48,9 +76,9 @@ cd manufacturing-ecommerce-analysis
 
 pip install -r requirements.txt
 
-# Generate cleaned dataset
+# Generate cleaned dataset with penetration metrics
 python src/data_cleaning.py
 
-# Run dashboard
+# Run dashboard (CSS loads automatically from assets/)
 python dash_app/app.py
 
