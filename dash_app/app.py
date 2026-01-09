@@ -44,6 +44,15 @@ app.layout = html.Div(
             style={"textAlign": "center"}
         ),
 
+        html.Div(
+        [
+        html.Div(id="kpi-share", className="kpi-card"),
+        html.Div(id="kpi-ecommerce", className="kpi-card"),
+        html.Div(id="kpi-growth", className="kpi-card"),
+        ],
+       style={"display": "flex", "gap": "25px", "marginBottom": "20px"}
+        ),
+
         dcc.Dropdown(
             id="industry-dropdown",
             options=[{"label": i, "value": i} for i in industries],
@@ -60,6 +69,34 @@ app.layout = html.Div(
     Output("line-chart", "figure"),
     Input("industry-dropdown", "value")
 )
+@app.callback(
+    Output("kpi-share", "children"),
+    Output("kpi-ecommerce", "children"),
+    Output("kpi-growth", "children"),
+    Input("industry-dropdown", "value"),
+)
+def update_kpis(industry):
+    dff = df[df["industry"] == industry] if industry else df
+
+    dff = dff.sort_values("year")
+
+    latest = dff.iloc[-1]
+    prev = dff.iloc[-2]
+
+    share = f"{latest['ecommerce_share_pct']:.2f}%"
+    ecommerce = f"${latest['ecommerce_value']:,.0f}M"
+
+    growth = (
+        (latest["ecommerce_value"] - prev["ecommerce_value"])
+        / prev["ecommerce_value"]
+    ) * 100
+
+    return (
+        f"E-commerce Share: {share}",
+        f"E-commerce Value: {ecommerce}",
+        f"YoY Growth: {growth:.2f}%",
+    )
+
 def update_chart(selected_industry):
 
     if selected_industry is None or df.empty:
@@ -73,6 +110,15 @@ def update_chart(selected_industry):
         y="ecommerce_value",
         markers=True,
         title=f"E-commerce Value Trend: {selected_industry}"
+    )
+
+    fig.add_annotation(
+    x=2008,
+    y=dff[dff["year"] == 2008]["ecommerce_value"].mean(),
+    text="2008 Financial Crisis",
+    showarrow=True,
+    arrowhead=2,
+    font=dict(size=12),
     )
 
     fig.update_layout(
