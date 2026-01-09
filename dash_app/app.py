@@ -57,72 +57,38 @@ app.layout = html.Div(
         dcc.Graph(id="line-chart")
     ]
 )
-
 @app.callback(
-    [
-        Output("line-chart", "figure"),
-        Output("kpi-share", "children"),
-        Output("kpi-ecommerce", "children"),
-        Output("kpi-growth", "children"),
-    ],
+    Output("line-chart", "figure"),
+    Output("kpi-share", "children"),
+    Output("kpi-ecommerce", "children"),
+    Output("kpi-growth", "children"),
     Input("industry-dropdown", "value"),
 )
 def update_dashboard(industry):
 
-    if industry is None or df.empty:
-        fig = px.line(title="No data available")
-        return fig, "—", "—", "—"
+    dff = df[df["industry"] == industry] if industry else df
+    dff = dff.sort_values("year")
 
-    dff = df[df["industry"] == industry].sort_values("year")
-
-    if len(dff) < 2:
-        fig = px.line(title="Not enough data")
-        return fig, "—", "—", "—"
-
-    # KPI calculations
-    latest = dff.iloc[-1]
-    prev = dff.iloc[-2]
-
-    ecommerce_value = latest["ecommerce_value"]
-
-    growth = (
-        (latest["ecommerce_value"] - prev["ecommerce_value"])
-        / prev["ecommerce_value"]
-    ) * 100
-
-    # Approximate share (relative to industry max)
-    share = (latest["ecommerce_value"] / dff["ecommerce_value"].max()) * 100
-
-    # Line chart
     fig = px.line(
         dff,
         x="year",
         y="ecommerce_value",
-        markers=True,
-        title=f"E-commerce Value Trend: {industry}",
+        title=f"E-commerce Value Trend: {industry}" if industry else "E-commerce Value Trend"
     )
 
-    fig.add_annotation(
-        x=2008,
-        y=dff[dff["year"] == 2008]["ecommerce_value"].values[0],
-        text="2008 Financial Crisis",
-        showarrow=True,
-        arrowhead=2,
-    )
+    latest = dff.iloc[-1]
+    prev = dff.iloc[-2]
 
-    fig.update_layout(
-        xaxis_title="Year",
-        yaxis_title="E-commerce Value (Million USD)",
-        template="plotly_white",
-    )
+    share = f"{latest['ecommerce_share_pct']:.2f}%"
+    ecommerce = f"${latest['ecommerce_value']:,.0f}M"
+    growth = ((latest["ecommerce_value"] - prev["ecommerce_value"]) / prev["ecommerce_value"]) * 100
 
     return (
         fig,
-        f"E-commerce Share: {share:.2f}%",
-        f"E-commerce Value: ${ecommerce_value:,.0f}M",
+        f"E-commerce Share: {share}",
+        f"E-commerce Value: {ecommerce}",
         f"YoY Growth: {growth:.2f}%",
     )
-
 
 if __name__ == "__main__":
     app.run_server(host="0.0.0.0", port=8050, debug=True)
