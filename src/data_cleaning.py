@@ -55,7 +55,10 @@ def clean_manufacturing_data():
                 })
 
     clean_df = pd.DataFrame(records)
-
+    df["ecommerce_share_pct"] = (
+    df["ecommerce_value"] / df["total_value"]) * 100
+    df = df[
+    ["industry", "year", "ecommerce_value", "total_value", "ecommerce_share_pct"]]
     os.makedirs("data/processed", exist_ok=True)
     clean_df.to_csv(OUT_PATH, index=False)
 
