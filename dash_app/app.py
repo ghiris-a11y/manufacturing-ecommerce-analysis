@@ -67,59 +67,61 @@ app.layout = html.Div(
     ],
     Input("industry-dropdown", "value"),
 )
-def update_kpis(industry):
-    dff = df[df["industry"] == industry] if industry else df
+def update_dashboard(industry):
 
-    dff = dff.sort_values("year")
+    if industry is None or df.empty:
+        fig = px.line(title="No data available")
+        return fig, "—", "—", "—"
 
+    dff = df[df["industry"] == industry].sort_values("year")
+
+    if len(dff) < 2:
+        fig = px.line(title="Not enough data")
+        return fig, "—", "—", "—"
+
+    # KPI calculations
     latest = dff.iloc[-1]
     prev = dff.iloc[-2]
 
-    share = f"{latest['ecommerce_share_pct']:.2f}%"
-    ecommerce = f"${latest['ecommerce_value']:,.0f}M"
+    ecommerce_value = latest["ecommerce_value"]
 
     growth = (
         (latest["ecommerce_value"] - prev["ecommerce_value"])
         / prev["ecommerce_value"]
     ) * 100
 
-    return (
-        f"E-commerce Share: {share}",
-        f"E-commerce Value: {ecommerce}",
-        f"YoY Growth: {growth:.2f}%",
-    )
+    # Approximate share (relative to industry max)
+    share = (latest["ecommerce_value"] / dff["ecommerce_value"].max()) * 100
 
-def update_chart(selected_industry):
-
-    if selected_industry is None or df.empty:
-        return px.line(title="No data available")
-
-    filtered = df[df["industry"] == selected_industry]
-
+    # Line chart
     fig = px.line(
-        filtered,
+        dff,
         x="year",
         y="ecommerce_value",
         markers=True,
-        title=f"E-commerce Value Trend: {selected_industry}"
+        title=f"E-commerce Value Trend: {industry}",
     )
 
     fig.add_annotation(
-    x=2008,
-    y=dff[dff["year"] == 2008]["ecommerce_value"].mean(),
-    text="2008 Financial Crisis",
-    showarrow=True,
-    arrowhead=2,
-    font=dict(size=12),
+        x=2008,
+        y=dff[dff["year"] == 2008]["ecommerce_value"].values[0],
+        text="2008 Financial Crisis",
+        showarrow=True,
+        arrowhead=2,
     )
 
     fig.update_layout(
         xaxis_title="Year",
         yaxis_title="E-commerce Value (Million USD)",
-        template="plotly_white"
+        template="plotly_white",
     )
 
-    return fig
+    return (
+        fig,
+        f"E-commerce Share: {share:.2f}%",
+        f"E-commerce Value: ${ecommerce_value:,.0f}M",
+        f"YoY Growth: {growth:.2f}%",
+    )
 
 
 if __name__ == "__main__":
