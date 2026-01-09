@@ -76,6 +76,9 @@ def update_dashboard(industry):
         title=f"E-commerce Value Trend: {industry}" if industry else "E-commerce Value Trend"
     )
 
+    if len(dff) < 2:
+        return fig, "N/A", "N/A", "N/A"
+
     latest = dff.iloc[-1]
     prev = dff.iloc[-2]
 
