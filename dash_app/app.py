@@ -66,13 +66,12 @@ app.layout = html.Div(
 )
 
 @app.callback(
-    Output("line-chart", "figure"),
-    Input("industry-dropdown", "value")
-)
-@app.callback(
-    Output("kpi-share", "children"),
-    Output("kpi-ecommerce", "children"),
-    Output("kpi-growth", "children"),
+    [
+        Output("line-chart", "figure"),
+        Output("kpi-share", "children"),
+        Output("kpi-ecommerce", "children"),
+        Output("kpi-growth", "children"),
+    ],
     Input("industry-dropdown", "value"),
 )
 def update_kpis(industry):
