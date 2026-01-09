@@ -4,8 +4,8 @@ import numpy as np
 import re
 
 
-# src/data_cleaning.py
 
+# src/data_cleaning.py
 import pandas as pd
 import os
 
@@ -16,12 +16,11 @@ def clean_manufacturing_data():
     print("Reading raw CSV...")
     df = pd.read_csv(RAW_PATH)
 
-    # Row 0 = years, Row 1 = Total / E-commerce
     year_row = df.iloc[0]
     type_row = df.iloc[1]
 
-    # Build column mapping
-    col_map = {}
+    ecommerce_cols = {}
+    total_cols = {}
     current_year = None
 
     for col in df.columns[2:]:
@@ -29,13 +28,13 @@ def clean_manufacturing_data():
         type_val = type_row[col]
 
         if pd.notna(year_val):
-            # Handle "2014 revised"
             current_year = str(year_val).split()[0]
 
         if type_val == "E-commerce":
-            col_map[col] = current_year
+            ecommerce_cols[col] = int(current_year)
+        elif type_val == "Total":
+            total_cols[col] = int(current_year)
 
-    # Keep only relevant rows (actual industries)
     data = df.iloc[4:].copy()
     data = data[data["NAICS Code"].notna()]
     data["NAICS Code"] = data["NAICS Code"].astype(int)
@@ -45,20 +44,24 @@ def clean_manufacturing_data():
     for _, row in data.iterrows():
         industry = row["Description"]
 
-        for col, year in col_map.items():
-            value = row[col]
-            if pd.notna(value):
+        for col, year in ecommerce_cols.items():
+            ecom = row[col]
+            total = row[[k for k, v in total_cols.items() if v == year][0]]
+
+            if pd.notna(ecom) and pd.notna(total):
+                ecom = float(str(ecom).replace(",", ""))
+                total = float(str(total).replace(",", ""))
+
                 records.append({
                     "industry": industry,
-                    "year": int(year),
-                    "ecommerce_value": float(str(value).replace(",", ""))
+                    "year": year,
+                    "ecommerce_value": ecom,
+                    "total_value": total,
+                    "ecommerce_share_pct": (ecom / total) * 100
                 })
 
     clean_df = pd.DataFrame(records)
-    df["ecommerce_share_pct"] = (
-    df["ecommerce_value"] / df["total_value"]) * 100
-    df = df[
-    ["industry", "year", "ecommerce_value", "total_value", "ecommerce_share_pct"]]
+
     os.makedirs("data/processed", exist_ok=True)
     clean_df.to_csv(OUT_PATH, index=False)
 
@@ -68,6 +71,7 @@ def clean_manufacturing_data():
 
     return clean_df
 
-
 if __name__ == "__main__":
     clean_manufacturing_data()
+
+
