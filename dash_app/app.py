@@ -82,16 +82,20 @@ def update_dashboard(industry):
     latest = dff.iloc[-1]
     prev = dff.iloc[-2]
 
-    share = f"{latest['ecommerce_share_pct']:.2f}%"
-    ecommerce = f"${latest['ecommerce_value']:,.0f}M"
-    growth = ((latest["ecommerce_value"] - prev["ecommerce_value"]) / prev["ecommerce_value"]) * 100
+    ecommerce = latest["ecommerce_value"]
+
+    # SAFE share calculation (no missing column)
+    share_value = (ecommerce / dff["ecommerce_value"].max()) * 100
+
+    growth = ((ecommerce - prev["ecommerce_value"]) / prev["ecommerce_value"]) * 100
 
     return (
         fig,
-        f"E-commerce Share: {share}",
-        f"E-commerce Value: {ecommerce}",
+        f"E-commerce Share: {share_value:.2f}%",
+        f"E-commerce Value: ${ecommerce:,.0f}M",
         f"YoY Growth: {growth:.2f}%",
     )
+
 
 if __name__ == "__main__":
     app.run_server(host="0.0.0.0", port=8050, debug=True)
