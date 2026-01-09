@@ -1,0 +1,8 @@
+.kpi-card {
+  padding: 18px 24px;
+  background-color: #f4f6fb;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
