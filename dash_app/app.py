@@ -118,31 +118,8 @@ def update_dashboard(industry):
     # -------- KPI VALUES --------
     share = f"{latest['ecommerce_share_pct']:.2f}%"
     ecommerce = f"${latest['ecommerce_value']:,.0f}M"
-
-    growth_val = (
-    (latest["ecommerce_value"] - prev["ecommerce_value"])
-    / prev["ecommerce_value"]
-     ) * 100
-
-     # Arrow + color logic
-    if growth_val > 0:
-           arrow = "▲"
-           growth_class = "kpi-positive"
-     elif growth_val < 0:
-          arrow = "▼"
-          growth_class = "kpi-negative"
-     else:
-          arrow = "●"
-          growth_class = "kpi-neutral"
-
-    growth_component = html.Div(
-        [
-        "YoY Growth",
-        html.Strong(f"{arrow} {growth_val:.2f}%")
-        ],
-     className=f"kpi-card {growth_class}"
-     )
-
+    growth_val = ((latest['ecommerce_value'] - prev['ecommerce_value']) / prev['ecommerce_value']) * 100
+    growth = f"{growth_val:.2f}%"
     # ---------- INDUSTRY BAR (LATEST YEAR) ----------
     latest_year = df["year"].max()
     latest_df = df[df["year"] == latest_year]
