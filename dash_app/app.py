@@ -125,7 +125,7 @@ def update_dashboard(industry):
      ) * 100
 
      # Arrow + color logic
-     if growth_val > 0:
+    if growth_val > 0:
            arrow = "▲"
            growth_class = "kpi-positive"
      elif growth_val < 0:
