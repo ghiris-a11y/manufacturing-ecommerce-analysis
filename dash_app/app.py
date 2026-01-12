@@ -59,6 +59,9 @@ app.layout = html.Div(
 )
 @app.callback(
     Output("line-chart", "figure"),
+    Output("industry-bar-chart", "figure"),
+    Output("top-bottom-chart", "figure"),
+    Output("stacked-area-chart", "figure"),
     Output("kpi-share", "children"),
     Output("kpi-ecommerce", "children"),
     Output("kpi-growth", "children"),
@@ -66,10 +69,11 @@ app.layout = html.Div(
 )
 def update_dashboard(industry):
 
+    # Filter data
     dff = df[df["industry"] == industry] if industry else df
     dff = dff.sort_values("year")
 
-    # -------- LINE CHART (Industry Trend) --------
+    # ---------- LINE CHART ----------
     line_fig = px.line(
         dff,
         x="year",
@@ -77,7 +81,7 @@ def update_dashboard(industry):
         title=f"E-commerce Value Trend: {industry}" if industry else "E-commerce Value Trend"
     )
 
-    # -------- KPI LOGIC --------
+    # ---------- SAFETY CHECK ----------
     if len(dff) < 2:
         empty_fig = px.bar(title="No data available")
         return line_fig, empty_fig, empty_fig, empty_fig, "N/A", "N/A", "N/A"
@@ -85,12 +89,13 @@ def update_dashboard(industry):
     latest = dff.iloc[-1]
     prev = dff.iloc[-2]
 
+    # ---------- KPI VALUES ----------
     share = f"{latest['ecommerce_share_pct']:.2f}%"
     ecommerce = f"${latest['ecommerce_value']:,.0f}M"
-    growth = ((latest["ecommerce_value"] - prev["ecommerce_value"]) / prev["ecommerce_value"]) * 100
-    growth = f"{growth:.2f}%"
+    growth_val = ((latest["ecommerce_value"] - prev["ecommerce_value"]) / prev["ecommerce_value"]) * 100
+    growth = f"{growth_val:.2f}%"
 
-    # -------- INDUSTRY COMPARISON BAR (LATEST YEAR) --------
+    # ---------- INDUSTRY BAR (LATEST YEAR) ----------
     latest_year = df["year"].max()
     latest_df = df[df["year"] == latest_year]
 
@@ -100,10 +105,9 @@ def update_dashboard(industry):
         y="ecommerce_share_pct",
         title=f"E-commerce Share by Industry ({latest_year})",
     )
-
     bar_fig.update_layout(xaxis_tickangle=-45)
 
-    # -------- TOP 5 vs BOTTOM 5 (SMALL MULTIPLES) --------
+    # ---------- TOP 5 vs BOTTOM 5 ----------
     ranked = latest_df.sort_values("ecommerce_share_pct", ascending=False)
     top_bottom = pd.concat([ranked.head(5), ranked.tail(5)])
 
@@ -114,10 +118,9 @@ def update_dashboard(industry):
         color="industry",
         title="Top 5 vs Bottom 5 Industries (E-commerce Share)",
     )
-
     top_bottom_fig.update_layout(showlegend=False, xaxis_tickangle=-45)
 
-    # -------- STACKED AREA: E-COMMERCE vs NON --------
+    # ---------- STACKED AREA ----------
     stacked = dff.copy()
     stacked["non_ecommerce"] = stacked["total_value"] - stacked["ecommerce_value"]
 
@@ -141,6 +144,7 @@ def update_dashboard(industry):
         yaxis_title="Value (USD Millions)"
     )
 
+    # ---------- RETURN (ORDER MUST MATCH OUTPUTS) ----------
     return (
         line_fig,
         bar_fig,
