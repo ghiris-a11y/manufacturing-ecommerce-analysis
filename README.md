@@ -29,6 +29,12 @@ using official Census shipment tables.
   - Latest e-commerce penetration (%)
   - Latest e-commerce value
   - Year-over-year growth
+  - 
+### 📊 Advanced Visualizations
+- Industry comparison bar chart (latest year)
+- Top 5 vs Bottom 5 industry comparison
+- Stacked area chart showing e-commerce vs traditional manufacturing
+
 - 📝 **Annotated insights** highlighting key economic events
 - 🎨 **Custom CSS styling** for clean, modern dashboard layout
 ---
