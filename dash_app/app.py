@@ -69,32 +69,88 @@ def update_dashboard(industry):
     dff = df[df["industry"] == industry] if industry else df
     dff = dff.sort_values("year")
 
-    fig = px.line(
+    # -------- LINE CHART (Industry Trend) --------
+    line_fig = px.line(
         dff,
         x="year",
         y="ecommerce_value",
         title=f"E-commerce Value Trend: {industry}" if industry else "E-commerce Value Trend"
     )
 
+    # -------- KPI LOGIC --------
     if len(dff) < 2:
-        return fig, "N/A", "N/A", "N/A"
+        empty_fig = px.bar(title="No data available")
+        return line_fig, empty_fig, empty_fig, empty_fig, "N/A", "N/A", "N/A"
 
     latest = dff.iloc[-1]
     prev = dff.iloc[-2]
 
-    ecommerce = latest["ecommerce_value"]
+    share = f"{latest['ecommerce_share_pct']:.2f}%"
+    ecommerce = f"${latest['ecommerce_value']:,.0f}M"
+    growth = ((latest["ecommerce_value"] - prev["ecommerce_value"]) / prev["ecommerce_value"]) * 100
+    growth = f"{growth:.2f}%"
 
-    # SAFE share calculation (no missing column)
-    share_value = (ecommerce / dff["ecommerce_value"].max()) * 100
+    # -------- INDUSTRY COMPARISON BAR (LATEST YEAR) --------
+    latest_year = df["year"].max()
+    latest_df = df[df["year"] == latest_year]
 
-    growth = ((ecommerce - prev["ecommerce_value"]) / prev["ecommerce_value"]) * 100
+    bar_fig = px.bar(
+        latest_df,
+        x="industry",
+        y="ecommerce_share_pct",
+        title=f"E-commerce Share by Industry ({latest_year})",
+    )
+
+    bar_fig.update_layout(xaxis_tickangle=-45)
+
+    # -------- TOP 5 vs BOTTOM 5 (SMALL MULTIPLES) --------
+    ranked = latest_df.sort_values("ecommerce_share_pct", ascending=False)
+    top_bottom = pd.concat([ranked.head(5), ranked.tail(5)])
+
+    top_bottom_fig = px.bar(
+        top_bottom,
+        x="industry",
+        y="ecommerce_share_pct",
+        color="industry",
+        title="Top 5 vs Bottom 5 Industries (E-commerce Share)",
+    )
+
+    top_bottom_fig.update_layout(showlegend=False, xaxis_tickangle=-45)
+
+    # -------- STACKED AREA: E-COMMERCE vs NON --------
+    stacked = dff.copy()
+    stacked["non_ecommerce"] = stacked["total_value"] - stacked["ecommerce_value"]
+
+    stacked_fig = go.Figure()
+    stacked_fig.add_trace(go.Scatter(
+        x=stacked["year"],
+        y=stacked["ecommerce_value"],
+        stackgroup="one",
+        name="E-commerce"
+    ))
+    stacked_fig.add_trace(go.Scatter(
+        x=stacked["year"],
+        y=stacked["non_ecommerce"],
+        stackgroup="one",
+        name="Non E-commerce"
+    ))
+
+    stacked_fig.update_layout(
+        title="E-commerce vs Non E-commerce Shipments",
+        xaxis_title="Year",
+        yaxis_title="Value (USD Millions)"
+    )
 
     return (
-        fig,
-        f"E-commerce Share: {share_value:.2f}%",
-        f"E-commerce Value: ${ecommerce:,.0f}M",
-        f"YoY Growth: {growth:.2f}%",
+        line_fig,
+        bar_fig,
+        top_bottom_fig,
+        stacked_fig,
+        f"E-commerce Share: {share}",
+        f"E-commerce Value: {ecommerce}",
+        f"YoY Growth: {growth}",
     )
+
 
 
 if __name__ == "__main__":
