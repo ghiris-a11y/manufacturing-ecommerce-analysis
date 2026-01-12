@@ -6,6 +6,7 @@ import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.express as px
+import plotly.graph_objects as go
 
 DATA_PATH = "data/processed/manufacturing_clean.csv"
 
@@ -148,7 +149,7 @@ def update_dashboard(industry):
     # ---------- STACKED AREA ----------
     stacked = dff.copy()
 
-     if "total_value" in stacked.columns:
+    if "total_value" in stacked.columns:
          stacked["non_ecommerce"] = stacked["total_value"] - stacked["ecommerce_value"]
     else:
          stacked["non_ecommerce"] = 0
