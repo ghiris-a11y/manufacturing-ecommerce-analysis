@@ -116,32 +116,32 @@ def update_dashboard(industry):
     prev = dff.iloc[-2]
 
     # -------- KPI VALUES --------
-share = f"{latest['ecommerce_share_pct']:.2f}%"
-ecommerce = f"${latest['ecommerce_value']:,.0f}M"
+    share = f"{latest['ecommerce_share_pct']:.2f}%"
+    ecommerce = f"${latest['ecommerce_value']:,.0f}M"
 
-growth_val = (
+    growth_val = (
     (latest["ecommerce_value"] - prev["ecommerce_value"])
     / prev["ecommerce_value"]
-) * 100
+     ) * 100
 
-# Arrow + color logic
-if growth_val > 0:
-    arrow = "▲"
-    growth_class = "kpi-positive"
-elif growth_val < 0:
-    arrow = "▼"
-    growth_class = "kpi-negative"
-else:
-    arrow = "●"
-    growth_class = "kpi-neutral"
+     # Arrow + color logic
+     if growth_val > 0:
+           arrow = "▲"
+           growth_class = "kpi-positive"
+     elif growth_val < 0:
+          arrow = "▼"
+          growth_class = "kpi-negative"
+     else:
+          arrow = "●"
+          growth_class = "kpi-neutral"
 
-growth_component = html.Div(
-    [
+    growth_component = html.Div(
+        [
         "YoY Growth",
         html.Strong(f"{arrow} {growth_val:.2f}%")
-    ],
-    className=f"kpi-card {growth_class}"
-)
+        ],
+     className=f"kpi-card {growth_class}"
+     )
 
     # ---------- INDUSTRY BAR (LATEST YEAR) ----------
     latest_year = df["year"].max()
