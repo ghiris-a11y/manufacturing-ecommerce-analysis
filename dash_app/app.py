@@ -38,12 +38,12 @@ app.layout = html.Div(
         ),
 
         html.Div(
-        [
-        html.Div(id="kpi-share", className="kpi-card"),
-        html.Div(id="kpi-ecommerce", className="kpi-card"),
-        html.Div(id="kpi-growth", className="kpi-card"),
-        ],
-       style={"display": "flex", "gap": "25px", "marginBottom": "20px"}
+            [
+                html.Div(id="kpi-share", className="kpi-card"),
+                html.Div(id="kpi-ecommerce", className="kpi-card"),
+                html.Div(id="kpi-growth", className="kpi-card"),
+            ],
+            style={"display": "flex", "gap": "25px", "marginBottom": "20px"}
         ),
 
         dcc.Dropdown(
@@ -54,9 +54,22 @@ app.layout = html.Div(
             style={"marginBottom": "20px"}
         ),
 
-        dcc.Graph(id="line-chart")
+        dcc.Graph(id="line-chart"),
+
+        html.Hr(),
+
+        dcc.Graph(id="industry-bar-chart"),
+
+        html.Hr(),
+
+        dcc.Graph(id="top-bottom-chart"),
+
+        html.Hr(),
+
+        dcc.Graph(id="stacked-area-chart"),
     ]
 )
+
 @app.callback(
     Output("line-chart", "figure"),
     Output("industry-bar-chart", "figure"),
