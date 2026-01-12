@@ -1,7 +1,47 @@
-.kpi {
-  background: #f7f9fc;
-  padding: 16px 28px;
-  border-radius: 14px;
+/* =========================
+   KPI CARDS – MODERN STYLE
+   ========================= */
+
+.kpi-card {
+  background: linear-gradient(135deg, #ffffff, #f3f6fb);
+  padding: 18px 32px;
+  border-radius: 18px;
+  min-width: 260px;
+  text-align: center;
+
+  font-size: 1.05rem;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  color: #1f2937;
+
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Hover effect */
+.kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+/* KPI emphasis */
+.kpi-card strong {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-top: 6px;
+  color: #2563eb;
+}
+
+/* Responsive stacking */
+@media (max-width: 900px) {
+  .kpi-card {
+    width: 100%;
+  }
 }
