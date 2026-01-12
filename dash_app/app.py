@@ -20,6 +20,18 @@ if os.path.exists(DATA_PATH):
 else:
     df = pd.DataFrame(columns=["industry", "year", "ecommerce_value"])
     print("CSV NOT FOUND — dashboard will be empty")
+    
+if "ecommerce_share_pct" not in df.columns:
+    if "total_value" in df.columns:
+        df["ecommerce_share_pct"] = (df["ecommerce_value"] / df["total_value"]) * 100
+    else:
+        # Fallback: relative share (prevents crash)
+        df["ecommerce_share_pct"] = (
+            df["ecommerce_value"] / df["ecommerce_value"].max()
+        ) * 100
+
+if "total_value" not in df.columns:
+    df["total_value"] = df["ecommerce_value"]
 
 print("==========================")
 
@@ -135,7 +147,11 @@ def update_dashboard(industry):
 
     # ---------- STACKED AREA ----------
     stacked = dff.copy()
-    stacked["non_ecommerce"] = stacked["total_value"] - stacked["ecommerce_value"]
+
+     if "total_value" in stacked.columns:
+         stacked["non_ecommerce"] = stacked["total_value"] - stacked["ecommerce_value"]
+    else:
+         stacked["non_ecommerce"] = 0
 
     stacked_fig = go.Figure()
     stacked_fig.add_trace(go.Scatter(
