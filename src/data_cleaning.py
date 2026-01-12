@@ -59,6 +59,12 @@ def clean_manufacturing_data():
                     "total_value": total,
                     "ecommerce_share_pct": (ecom / total) * 100
                 })
+                
+    df_clean["non_ecommerce_value"] = (
+    df_clean["total_shipments"] - df_clean["ecommerce_value"]
+     )
+    
+    df_clean["non_ecommerce_value"] = df_clean["non_ecommerce_value"].clip(lower=0)
 
     clean_df = pd.DataFrame(records)
 
