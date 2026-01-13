@@ -1,47 +1,61 @@
 /* =========================
-   KPI CARDS – MODERN STYLE
+   POWER BI STYLE DASHBOARD
    ========================= */
 
+body {
+    background-color: #f0f2f5; /* Light grey background for the whole page */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* KPI Cards */
 .kpi-card {
-  background: linear-gradient(135deg, #ffffff, #f3f6fb);
-  padding: 18px 32px;
-  border-radius: 18px;
-  min-width: 260px;
-  text-align: center;
-
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #1f2937;
-
-  box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
-
-  border: 1px solid rgba(0, 0, 0, 0.05);
-
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    flex: 1; /* Make them grow evenly */
+    min-width: 200px;
+    border-left: 5px solid #2563EB; /* Blue accent line */
 }
 
-/* Hover effect */
-.kpi-card:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    0 14px 28px rgba(0, 0, 0, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+.kpi-card span {
+    color: #6b7280;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
-/* KPI emphasis */
 .kpi-card strong {
-  display: block;
-  font-size: 1.4rem;
-  font-weight: 700;
-  margin-top: 6px;
-  color: #2563eb;
+    display: block;
+    font-size: 1.5rem;
+    color: #111827;
+    margin-top: 5px;
 }
 
-/* Responsive stacking */
-@media (max-width: 900px) {
-  .kpi-card {
-    width: 100%;
-  }
+/* Chart Containers (The white boxes) */
+.chart-container {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    height: 100%; /* Fill the grid cell */
+}
+
+/* The Grid Layout for Charts */
+.charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    grid-template-rows: auto auto;  /* Two rows */
+    gap: 20px; /* Space between charts */
+    margin-bottom: 30px;
+}
+
+/* Responsive: Stack vertically on small screens */
+@media (max-width: 1000px) {
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+}
 }
