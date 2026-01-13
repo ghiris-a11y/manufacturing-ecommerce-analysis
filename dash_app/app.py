@@ -10,180 +10,164 @@ import plotly.graph_objects as go
 
 DATA_PATH = "data/processed/manufacturing_clean.csv"
 
-print("=== DASH STARTUP DEBUG ===")
-print("Working directory:", os.getcwd())
-print("Looking for:", DATA_PATH)
-print("File exists:", os.path.exists(DATA_PATH))
-
 if os.path.exists(DATA_PATH):
     df = pd.read_csv(DATA_PATH)
-    print("CSV shape:", df.shape)
 else:
-    df = pd.DataFrame(columns=["industry", "year", "ecommerce_value"])
-    print("CSV NOT FOUND — dashboard will be empty")
-    
-if "ecommerce_share_pct" not in df.columns:
-    if "total_value" in df.columns:
-        df["ecommerce_share_pct"] = (df["ecommerce_value"] / df["total_value"]) * 100
-    else:
-        # Fallback: relative share (prevents crash)
-        df["ecommerce_share_pct"] = (
-            df["ecommerce_value"] / df["ecommerce_value"].max()
-        ) * 100
+    df = pd.DataFrame(columns=["industry", "year", "ecommerce_value", "total_value", "ecommerce_share_pct"])
 
-if "total_value" not in df.columns:
-    df["total_value"] = df["ecommerce_value"]
-
-print("==========================")
+if not df.empty:
+    df = df.sort_values("year")
+    industries = sorted(df["industry"].unique())
+    years = sorted(df["year"].unique())
+    min_year, max_year = min(years), max(years)
+else:
+    industries, years, min_year, max_year = [], [], 2000, 2015
 
 app = dash.Dash(__name__)
 server = app.server
 
-industries = sorted(df["industry"].unique())
-
+# --- LAYOUT ---
 app.layout = html.Div(
-    style={"width": "90%", "margin": "auto"},
+    style={"padding": "20px", "maxWidth": "1600px", "margin": "auto"}, # Wide container
     children=[
+        
+        # 1. TITLE & FILTERS ROW
+        html.Div([
+            html.Div([
+                html.H2("🏭 Manufacturing E-commerce", style={"margin": "0", "color": "#1f2937"}),
+                html.P("U.S. Census Bureau Data (1999-2015)", style={"margin": "0", "color": "#6b7280", "fontSize": "0.9rem"})
+            ], style={"flex": "1"}),
 
-        html.H1(
-            "U.S. Manufacturing E-commerce Dashboard",
-            style={"textAlign": "center"}
-        ),
+            # Controls aligned right
+            html.Div([
+                dcc.Dropdown(
+                    id="industry-dropdown",
+                    options=[{"label": "All Industries", "value": "All"}] + [{"label": i, "value": i} for i in industries],
+                    value="All",
+                    clearable=False,
+                    style={"width": "250px", "marginRight": "15px"}
+                ),
+                html.Div([
+                    dcc.Slider(
+                        id="year-slider",
+                        min=min_year,
+                        max=max_year,
+                        value=max_year,
+                        marks={str(y): str(y) for y in years if y % 5 == 0 or y == max_year},
+                    )
+                ], style={"width": "200px", "paddingTop": "5px"})
+            ], style={"display": "flex", "alignItems": "center"})
+        ], style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginBottom": "20px", "background": "white", "padding": "15px", "borderRadius": "10px", "boxShadow": "0 2px 5px rgba(0,0,0,0.05)"}),
 
+        # 2. KPI ROW
         html.Div(
-            [
+            children=[
                 html.Div(id="kpi-share", className="kpi-card"),
                 html.Div(id="kpi-ecommerce", className="kpi-card"),
-                html.Div(id="kpi-growth", className="kpi-card"),
+                html.Div(id="kpi-total", className="kpi-card"),
             ],
-            style={"display": "flex", "gap": "25px", "marginBottom": "20px"}
+            style={"display": "flex", "gap": "20px", "marginBottom": "20px"}
         ),
 
-        dcc.Dropdown(
-            id="industry-dropdown",
-            options=[{"label": i, "value": i} for i in industries],
-            value=industries[0] if industries else None,
-            placeholder="Select an industry",
-            style={"marginBottom": "20px"}
-        ),
+        # 3. CHARTS GRID (2x2 Layout)
+        html.Div(className="charts-grid", children=[
+            
+            # Top Left: Trend
+            html.Div(className="chart-container", children=[
+                dcc.Graph(id="trend-line-chart", style={"height": "350px"})
+            ]),
 
-        dcc.Graph(id="line-chart"),
+            # Top Right: Stacked Area
+            html.Div(className="chart-container", children=[
+                dcc.Graph(id="stacked-area-chart", style={"height": "350px"})
+            ]),
 
-        html.Hr(),
+            # Bottom Left: Sector Bar
+            html.Div(className="chart-container", children=[
+                dcc.Graph(id="sector-bar-chart", style={"height": "350px"})
+            ]),
 
-        dcc.Graph(id="industry-bar-chart"),
-
-        html.Hr(),
-
-        dcc.Graph(id="top-bottom-chart"),
-
-        html.Hr(),
-
-        dcc.Graph(id="stacked-area-chart"),
+            # Bottom Right: Top/Bottom
+            html.Div(className="chart-container", children=[
+                dcc.Graph(id="top-bottom-chart", style={"height": "350px"})
+            ]),
+        ])
     ]
 )
 
+
+# --- CALLBACKS ---
 @app.callback(
-    Output("line-chart", "figure"),
-    Output("industry-bar-chart", "figure"),
-    Output("top-bottom-chart", "figure"),
-    Output("stacked-area-chart", "figure"),
-    Output("kpi-share", "children"),
-    Output("kpi-ecommerce", "children"),
-    Output("kpi-growth", "children"),
-    Input("industry-dropdown", "value"),
+    [Output("kpi-share", "children"),
+     Output("kpi-ecommerce", "children"),
+     Output("kpi-total", "children"),
+     Output("trend-line-chart", "figure"),
+     Output("sector-bar-chart", "figure"),
+     Output("top-bottom-chart", "figure"),
+     Output("stacked-area-chart", "figure")],
+    [Input("industry-dropdown", "value"),
+     Input("year-slider", "value")]
 )
-def update_dashboard(industry):
+def update_charts(selected_industry, selected_year):
+    if df.empty: return ["N/A"]*3 + [px.scatter()]*4
 
-    # Filter data
-    dff = df[df["industry"] == industry] if industry else df
-    dff = dff.sort_values("year")
-
-    # ---------- LINE CHART ----------
-    line_fig = px.line(
-        dff,
-        x="year",
-        y="ecommerce_value",
-        title=f"E-commerce Value Trend: {industry}" if industry else "E-commerce Value Trend"
-    )
-
-    # ---------- SAFETY CHECK ----------
-    if len(dff) < 2:
-        empty_fig = px.bar(title="No data available")
-        return line_fig, empty_fig, empty_fig, empty_fig, "N/A", "N/A", "N/A"
-
-    latest = dff.iloc[-1]
-    prev = dff.iloc[-2]
-
-    # -------- KPI VALUES --------
-    share = f"{latest['ecommerce_share_pct']:.2f}%"
-    ecommerce = f"${latest['ecommerce_value']:,.0f}M"
-    growth_val = ((latest['ecommerce_value'] - prev['ecommerce_value']) / prev['ecommerce_value']) * 100
-    growth = f"{growth_val:.2f}%"
-    # ---------- INDUSTRY BAR (LATEST YEAR) ----------
-    latest_year = df["year"].max()
-    latest_df = df[df["year"] == latest_year]
-
-    bar_fig = px.bar(
-        latest_df,
-        x="industry",
-        y="ecommerce_share_pct",
-        title=f"E-commerce Share by Industry ({latest_year})",
-    )
-    bar_fig.update_layout(xaxis_tickangle=-45)
-
-    # ---------- TOP 5 vs BOTTOM 5 ----------
-    ranked = latest_df.sort_values("ecommerce_share_pct", ascending=False)
-    top_bottom = pd.concat([ranked.head(5), ranked.tail(5)])
-
-    top_bottom_fig = px.bar(
-        top_bottom,
-        x="industry",
-        y="ecommerce_share_pct",
-        color="industry",
-        title="Top 5 vs Bottom 5 Industries (E-commerce Share)",
-    )
-    top_bottom_fig.update_layout(showlegend=False, xaxis_tickangle=-45)
-
-    # ---------- STACKED AREA ----------
-    stacked = dff.copy()
-
-    if "total_value" in stacked.columns:
-         stacked["non_ecommerce"] = stacked["total_value"] - stacked["ecommerce_value"]
+    # Filter Data
+    if selected_industry == "All":
+        dff_trend = df.groupby("year")[["ecommerce_value", "total_value"]].sum().reset_index()
+        dff_trend["ecommerce_share_pct"] = (dff_trend["ecommerce_value"] / dff_trend["total_value"]) * 100
+        title_prefix = "All Industries"
     else:
-         stacked["non_ecommerce"] = 0
+        dff_trend = df[df["industry"] == selected_industry].sort_values("year")
+        title_prefix = selected_industry
 
-    stacked_fig = go.Figure()
-    stacked_fig.add_trace(go.Scatter(
-        x=stacked["year"],
-        y=stacked["ecommerce_value"],
-        stackgroup="one",
-        name="E-commerce"
-    ))
-    stacked_fig.add_trace(go.Scatter(
-        x=stacked["year"],
-        y=stacked["non_ecommerce"],
-        stackgroup="one",
-        name="Non E-commerce"
-    ))
+    df_year = df[df["year"] == selected_year]
+    
+    # KPIs
+    if selected_industry == "All":
+        curr = df_year[["ecommerce_value", "total_value"]].sum()
+        share, ecom, total = (curr["ecommerce_value"]/curr["total_value"])*100, curr["ecommerce_value"], curr["total_value"]
+    else:
+        row = df_year[df_year["industry"] == selected_industry]
+        if not row.empty:
+            share, ecom, total = row["ecommerce_share_pct"].values[0], row["ecommerce_value"].values[0], row["total_value"].values[0]
+        else:
+            share, ecom, total = 0, 0, 0
 
-    stacked_fig.update_layout(
-        title="E-commerce vs Non E-commerce Shipments",
-        xaxis_title="Year",
-        yaxis_title="Value (USD Millions)"
-    )
+    kpi_share = [html.Span("Digital Penetration"), html.Br(), html.Strong(f"{share:.1f}%")]
+    kpi_ecom = [html.Span("E-commerce Sales"), html.Br(), html.Strong(f"${ecom:,.0f} M")]
+    kpi_total = [html.Span("Total Market"), html.Br(), html.Strong(f"${total:,.0f} M")]
 
-    # ---------- RETURN (ORDER MUST MATCH OUTPUTS) ----------
-    return (
-        line_fig,
-        bar_fig,
-        top_bottom_fig,
-        stacked_fig,
-        f"E-commerce Share: {share}",
-        f"E-commerce Value: {ecommerce}",
-        f"YoY Growth: {growth}",
-    )
+    # Common Layout Settings
+    layout_settings = dict(margin=dict(l=40, r=40, t=40, b=40), template="plotly_white")
 
+    # 1. Trend Line
+    fig_trend = go.Figure()
+    fig_trend.add_trace(go.Scatter(x=dff_trend["year"], y=dff_trend["ecommerce_value"], name="E-commerce", line=dict(color="#2563EB", width=3)))
+    fig_trend.add_trace(go.Scatter(x=dff_trend["year"], y=dff_trend["total_value"], name="Total", line=dict(color="#9CA3AF", dash="dot")))
+    fig_trend.update_layout(title=f"Growth Trend ({title_prefix})", **layout_settings)
+
+    # 2. Stacked Area
+    dff_trend["Traditional"] = dff_trend["total_value"] - dff_trend["ecommerce_value"]
+    fig_stacked = px.area(dff_trend, x="year", y=["Traditional", "ecommerce_value"], 
+                          color_discrete_map={"ecommerce_value": "#3B82F6", "Traditional": "#E5E7EB"})
+    fig_stacked.update_layout(title="Market Composition", showlegend=False, **layout_settings)
+
+    # 3. Bar Chart (Sectors)
+    if selected_industry == "All":
+        top_sectors = df_year.sort_values("ecommerce_value", ascending=True).tail(10) # Top 10 only to save space
+        fig_bar = px.bar(top_sectors, y="industry", x="ecommerce_value", orientation="h", title=f"Top 10 Sectors by Value ({selected_year})")
+    else:
+        fig_bar = px.bar(x=[ecom], y=[selected_industry], orientation="h", title=f"Sector Value ({selected_year})")
+    fig_bar.update_layout(**layout_settings)
+
+    # 4. Top/Bottom Share
+    ranked = df_year.sort_values("ecommerce_share_pct", ascending=False)
+    tb_df = pd.concat([ranked.head(3), ranked.tail(3)])
+    fig_tb = px.bar(tb_df, x="industry", y="ecommerce_share_pct", color="ecommerce_share_pct", 
+                    title=f"High vs Low Adoption ({selected_year})", color_continuous_scale="Blues")
+    fig_tb.update_layout(coloraxis_showscale=False, **layout_settings)
+
+    return kpi_share, kpi_ecom, kpi_total, fig_trend, fig_bar, fig_tb, fig_stacked
 
 if __name__ == "__main__":
     app.run_server(host="0.0.0.0", port=8050, debug=True)
