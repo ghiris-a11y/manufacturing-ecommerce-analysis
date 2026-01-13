@@ -1,5 +1,9 @@
  
-# 🏭 U.S. Manufacturing E-commerce Penetration Analysis (1999–2015)
+# 🏭 U.S. Manufacturing E-commerce Dashboard (1999–2015)
+
+![Dashboard Status](https://img.shields.io/badge/Status-Active-success)
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Dash](https://img.shields.io/badge/Framework-Dash-orange)
 
 ## 🚀 Live Dashboard
 
@@ -14,16 +18,6 @@
 
 This project analyzes **U.S. Census Bureau manufacturing e-commerce data** to understand how
 e-commerce adoption evolved in the **U.S. manufacturing sector** between **1999 and 2015**.
-
-An interactive **Dash dashboard** visualizes the **trend of manufacturing e-commerce activity over time**
-using official Census shipment tables.
-
----
-# 🏭 U.S. Manufacturing E-commerce Dashboard (1999–2015)
-
-![Dashboard Status](https://img.shields.io/badge/Status-Active-success)
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
-![Dash](https://img.shields.io/badge/Framework-Dash-orange)
 
 An interactive, **Power BI-style analytics dashboard** visualizing the shift from traditional manufacturing to e-commerce in the United States. Built with **Python (Dash & Plotly)** and styled with custom CSS for a professional business intelligence look.
 
