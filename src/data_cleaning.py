@@ -1,77 +1,86 @@
-import os   
-import pandas as pd
-import numpy as np
-import re
-
-
-
-# src/data_cleaning.py
 import pandas as pd
 import os
+import numpy as np
 
+# --- CONFIGURATION ---
 RAW_PATH = "data/raw/table_1.csv"
 OUT_PATH = "data/processed/manufacturing_clean.csv"
 
-def clean_manufacturing_data():
-    print("Reading raw CSV...")
-    df = pd.read_csv(RAW_PATH)
+def clean_data():
+    print(f"📂 Reading raw data from: {RAW_PATH}")
+    
+    if not os.path.exists(RAW_PATH):
+        print(f"❌ Error: File not found at {RAW_PATH}")
+        return
 
-    year_row = df.iloc[0]
-    type_row = df.iloc[1]
+    # Read with header=None to manually handle the complex structure
+    df_raw = pd.read_csv(RAW_PATH, header=None)
 
-    ecommerce_cols = {}
-    total_cols = {}
-    current_year = None
+    # Row 1 (index 1) contains Years (e.g., 2015, 2014)
+    years_row = df_raw.iloc[1]
+    
+    cleaned_data = []
+    
+    # Iterate through data rows (Data starts at row 3)
+    for index, row in df_raw.iloc[3:].iterrows():
+        industry = row[1] # Column 1 is the Industry Name
+        
+        # Columns come in pairs starting at index 2: [Total, E-commerce]
+        col_idx = 2
+        while col_idx < df_raw.shape[1] - 1:
+            # Extract Year from the 'Total' column header
+            year_val = str(years_row[col_idx])
+            
+            # Clean year string (remove 'revised')
+            if 'revised' in year_val:
+                year = year_val.replace(' revised', '')
+            else:
+                year = year_val
+            
+            # Skip invalid columns (like empty space or non-years)
+            if not year.replace('.', '', 1).isdigit():
+                col_idx += 2
+                continue
+                
+            year = int(float(year))
+            
+            # Extract Values
+            total_str = str(row[col_idx])      # Even column = Total
+            ecom_str = str(row[col_idx+1])     # Odd column = E-commerce
+            
+            # Helper to clean numbers (remove commas, handle 'S'/'D' suppression codes)
+            def clean_currency(x):
+                if pd.isna(x) or x in ['nan', 'S', 'D', 'X']: return None
+                x = x.replace(',', '').replace(' ', '')
+                try:
+                    return float(x)
+                except:
+                    return None
 
-    for col in df.columns[2:]:
-        year_val = year_row[col]
-        type_val = type_row[col]
-
-        if pd.notna(year_val):
-            current_year = str(year_val).split()[0]
-
-        if type_val == "E-commerce":
-            ecommerce_cols[col] = int(current_year)
-        elif type_val == "Total":
-            total_cols[col] = int(current_year)
-
-    data = df.iloc[4:].copy()
-    data = data[data["NAICS Code"].notna()]
-    data["NAICS Code"] = data["NAICS Code"].astype(int)
-
-    records = []
-
-    for _, row in data.iterrows():
-        industry = row["Description"]
-
-        for col, year in ecommerce_cols.items():
-            ecom = row[col]
-            total = row[[k for k, v in total_cols.items() if v == year][0]]
-
-            if pd.notna(ecom) and pd.notna(total):
-                ecom = float(str(ecom).replace(",", ""))
-                total = float(str(total).replace(",", ""))
-
-                records.append({
+            total_val = clean_currency(total_str)
+            ecom_val = clean_currency(ecom_str)
+            
+            # Only save if we have valid numbers
+            if total_val is not None and ecom_val is not None:
+                share = (ecom_val / total_val) * 100 if total_val > 0 else 0
+                
+                cleaned_data.append({
                     "industry": industry,
                     "year": year,
-                    "ecommerce_value": ecom,
-                    "total_value": total,
-                    "ecommerce_share_pct": (ecom / total) * 100
+                    "total_value": total_val,       # CRITICAL: This is the column you were missing!
+                    "ecommerce_value": ecom_val,
+                    "ecommerce_share_pct": share
                 })
+            
+            col_idx += 2
 
-    clean_df = pd.DataFrame(records)
-
-    os.makedirs("data/processed", exist_ok=True)
-    clean_df.to_csv(OUT_PATH, index=False)
-
-    print("Rows after cleaning:", len(clean_df))
-    print(clean_df.head())
-    print("CSV GENERATED:", OUT_PATH)
-
-    return clean_df
+    # Save to CSV
+    df_clean = pd.DataFrame(cleaned_data)
+    os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
+    df_clean.to_csv(OUT_PATH, index=False)
+    
+    print(f"✅ Success! Fixed data saved to: {OUT_PATH}")
+    print(f"📊 Columns: {df_clean.columns.tolist()}")
 
 if __name__ == "__main__":
-    clean_manufacturing_data()
-
-
+    clean_data()
