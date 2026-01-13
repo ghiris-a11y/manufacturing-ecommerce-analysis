@@ -9,33 +9,43 @@ import plotly.graph_objects as go
 # --- LOAD DATA ---
 DATA_PATH = "data/processed/manufacturing_clean.csv"
 
-# Safe Data Loading
+# 1. Load Data Safely
 if os.path.exists(DATA_PATH):
     df = pd.read_csv(DATA_PATH)
-    # Fallback if total_value is still missing (prevents crash)
-    if "total_value" not in df.columns:
-        df["total_value"] = df["ecommerce_value"] 
 else:
     df = pd.DataFrame(columns=["industry", "year", "ecommerce_value", "total_value", "ecommerce_share_pct"])
 
-# Prepare Lists
+# 2. SELF-REPAIR: Fix Missing Columns to Prevent Crashes
 if not df.empty:
+    # Fix 1: If 'total_value' is missing, assume it equals ecommerce_value (fallback)
+    if "total_value" not in df.columns:
+        df["total_value"] = df["ecommerce_value"]
+
+    # Fix 2: If 'ecommerce_share_pct' is missing, calculate it now
+    if "ecommerce_share_pct" not in df.columns:
+        # Avoid division by zero
+        df["ecommerce_share_pct"] = df.apply(
+            lambda x: (x["ecommerce_value"] / x["total_value"] * 100) if x["total_value"] > 0 else 0, 
+            axis=1
+        )
+
+    # Sort for charts
     df = df.sort_values("year")
     industries = sorted(df["industry"].unique())
     years = sorted(df["year"].unique())
-    min_year, max_year = min(years), max(years)
+    min_year, max_year = (min(years), max(years)) if years else (2000, 2015)
 else:
     industries, years, min_year, max_year = [], [], 2000, 2015
 
 app = dash.Dash(__name__)
 server = app.server
 
-# --- LAYOUT ---
+# --- LAYOUT (Power BI Grid) ---
 app.layout = html.Div(
     style={"padding": "20px", "maxWidth": "1600px", "margin": "auto"},
     children=[
         
-        # 1. HEADER & FILTERS
+        # Header & Filter Bar
         html.Div([
             html.Div([
                 html.H2("🏭 Manufacturing E-commerce", style={"margin": "0", "color": "#1f2937"}),
@@ -62,7 +72,7 @@ app.layout = html.Div(
             ], style={"display": "flex", "alignItems": "center"})
         ], style={"display": "flex", "justifyContent": "space-between", "alignItems": "center", "marginBottom": "20px", "background": "white", "padding": "15px", "borderRadius": "10px", "boxShadow": "0 2px 5px rgba(0,0,0,0.05)"}),
 
-        # 2. KPI ROW
+        # KPI Cards
         html.Div(
             children=[
                 html.Div(id="kpi-share", className="kpi-card"),
@@ -72,7 +82,7 @@ app.layout = html.Div(
             style={"display": "flex", "gap": "20px", "marginBottom": "20px"}
         ),
 
-        # 3. CHARTS GRID (2x2 Layout)
+        # Charts Grid
         html.Div(className="charts-grid", children=[
             html.Div(className="chart-container", children=[dcc.Graph(id="trend-line-chart", style={"height": "350px"})]),
             html.Div(className="chart-container", children=[dcc.Graph(id="stacked-area-chart", style={"height": "350px"})]),
@@ -92,25 +102,30 @@ app.layout = html.Div(
 def update_charts(selected_industry, selected_year):
     if df.empty: return ["N/A"]*3 + [px.scatter()]*4
 
-    # Filter Data
+    # 1. Filter Data (Trend)
     if selected_industry == "All":
         dff_trend = df.groupby("year")[["ecommerce_value", "total_value"]].sum().reset_index()
+        # Recalculate share for the aggregate
         dff_trend["ecommerce_share_pct"] = (dff_trend["ecommerce_value"] / dff_trend["total_value"]) * 100
         title_prefix = "All Industries"
     else:
         dff_trend = df[df["industry"] == selected_industry].sort_values("year")
         title_prefix = selected_industry
 
+    # 2. Filter Data (Single Year)
     df_year = df[df["year"] == selected_year]
     
-    # KPI Logic
+    # 3. KPI Logic
     if selected_industry == "All":
         curr = df_year[["ecommerce_value", "total_value"]].sum()
-        share, ecom, total = (curr["ecommerce_value"]/curr["total_value"])*100 if curr["total_value"] > 0 else 0, curr["ecommerce_value"], curr["total_value"]
+        total_val = curr["total_value"] if curr["total_value"] > 0 else 1
+        share, ecom, total = (curr["ecommerce_value"]/total_val)*100, curr["ecommerce_value"], curr["total_value"]
     else:
         row = df_year[df_year["industry"] == selected_industry]
         if not row.empty:
-            share, ecom, total = row["ecommerce_share_pct"].values[0], row["ecommerce_value"].values[0], row["total_value"].values[0]
+            share = row["ecommerce_share_pct"].values[0]
+            ecom = row["ecommerce_value"].values[0]
+            total = row["total_value"].values[0]
         else:
             share, ecom, total = 0, 0, 0
 
@@ -131,14 +146,14 @@ def update_charts(selected_industry, selected_year):
     fig_stacked = px.area(dff_trend, x="year", y=["Traditional", "ecommerce_value"], color_discrete_map={"ecommerce_value": "#3B82F6", "Traditional": "#E5E7EB"})
     fig_stacked.update_layout(title="Market Composition", showlegend=False, **layout_settings)
 
-    # Chart 3: Bar Chart
+    # Chart 3: Sector Bar
     if selected_industry == "All":
         fig_bar = px.bar(df_year.sort_values("ecommerce_value").tail(10), y="industry", x="ecommerce_value", orientation="h", title=f"Top 10 Sectors ({selected_year})")
     else:
         fig_bar = px.bar(x=[ecom], y=[selected_industry], orientation="h", title=f"Sector Value ({selected_year})")
     fig_bar.update_layout(**layout_settings)
 
-    # Chart 4: Top/Bottom
+    # Chart 4: Top/Bottom Share
     ranked = df_year.sort_values("ecommerce_share_pct", ascending=False)
     fig_tb = px.bar(pd.concat([ranked.head(3), ranked.tail(3)]), x="industry", y="ecommerce_share_pct", color="ecommerce_share_pct", title=f"High vs Low Adoption ({selected_year})", color_continuous_scale="Blues")
     fig_tb.update_layout(coloraxis_showscale=False, **layout_settings)
