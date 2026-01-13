@@ -47,7 +47,7 @@ This dashboard has been upgraded with a modern **Grid Layout** and advanced anal
     * **Growth Trend:** Dual-line chart comparing Total Shipments vs. E-commerce growth.
     * **Market Composition:** Stacked area chart showing the "Traditional vs. Digital" split.
     * **Sector Ranking:** Top 10 industries by value.
-    * **Adoption Highs/Lows:** Bar chart highlighting industries with the highest and lowest digital adoption rates.
+    * * **Maturity Matrix (New):** A scatter plot analyzing **Market Size vs. Digital Adoption**. This helps identify "Digital Giants" (High Value, High Tech) vs.         "Sleeping Giants" (High Value, Low Tech)..
 
 ---
 ---
