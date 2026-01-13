@@ -19,6 +19,43 @@ An interactive **Dash dashboard** visualizes the **trend of manufacturing e-comm
 using official Census shipment tables.
 
 ---
+# 🏭 U.S. Manufacturing E-commerce Dashboard (1999–2015)
+
+![Dashboard Status](https://img.shields.io/badge/Status-Active-success)
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Dash](https://img.shields.io/badge/Framework-Dash-orange)
+
+An interactive, **Power BI-style analytics dashboard** visualizing the shift from traditional manufacturing to e-commerce in the United States. Built with **Python (Dash & Plotly)** and styled with custom CSS for a professional business intelligence look.
+
+---
+
+## 📊 New Features (v2.0)
+
+This dashboard has been upgraded with a modern **Grid Layout** and advanced analytics features:
+
+* **⚡ Power BI-Style Interface:** A clean 2x2 grid layout with distinct shadow-boxed cards for professional presentation.
+* ## 🧩 Dashboard Features
+- 📈 **Industry-level e-commerce trends** (1999–2015)
+- 📊 **E-commerce share (% of total shipments)** by industry
+- 🧮 **KPI cards** showing:
+  - Latest e-commerce penetration (%)
+  - Latest e-commerce value
+  - Year-over-year growth
+    
+* **🔢 Dynamic KPI Cards:** Real-time "Big Number" metrics that update instantly based on filters:
+    * **Digital Penetration:** The % of market share owned by e-commerce.
+    * **E-commerce Sales:** Total value in Millions (USD).
+    * **Total Market:** Total manufacturing shipment value.
+* **🎛️ Interactive Controls:**
+    * **Year Slider:** Scrub through 16 years of historical data (1999–2015).
+    * **Sector Drill-down:** Filter the entire dashboard by specific industries (e.g., "Food Manufacturing" or "Transportation").
+* **📈 Advanced Charts:**
+    * **Growth Trend:** Dual-line chart comparing Total Shipments vs. E-commerce growth.
+    * **Market Composition:** Stacked area chart showing the "Traditional vs. Digital" split.
+    * **Sector Ranking:** Top 10 industries by value.
+    * **Adoption Highs/Lows:** Bar chart highlighting industries with the highest and lowest digital adoption rates.
+
+---
 ---
 
 ## 🧩 Dashboard Features
@@ -30,10 +67,6 @@ using official Census shipment tables.
   - Latest e-commerce value
   - Year-over-year growth
   - 
-### 📊 Advanced Visualizations
-- Industry comparison bar chart (latest year)
-- Top 5 vs Bottom 5 industry comparison
-- Stacked area chart showing e-commerce vs traditional manufacturing
 
 - 📝 **Annotated insights** highlighting key economic events
 - 🎨 **Custom CSS styling** for clean, modern dashboard layout
