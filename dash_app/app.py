@@ -153,12 +153,29 @@ def update_charts(selected_industry, selected_year):
         fig_bar = px.bar(x=[ecom], y=[selected_industry], orientation="h", title=f"Sector Value ({selected_year})")
     fig_bar.update_layout(**layout_settings)
 
-    # Chart 4: Top/Bottom Share
-    ranked = df_year.sort_values("ecommerce_share_pct", ascending=False)
-    fig_tb = px.bar(pd.concat([ranked.head(3), ranked.tail(3)]), x="industry", y="ecommerce_share_pct", color="ecommerce_share_pct", title=f"High vs Low Adoption ({selected_year})", color_continuous_scale="Blues")
-    fig_tb.update_layout(coloraxis_showscale=False, **layout_settings)
+    # 4. 🆕 MATURITY MATRIX (Scatter Plot)
+    # X-axis: Market Size (Total Value), Y-axis: Tech Adoption (Share %)
+    fig_scatter = px.scatter(
+        df_year, 
+        x="total_value", 
+        y="ecommerce_share_pct", 
+        size="ecommerce_value",   # Bubble size = E-com Volume
+        hover_name="industry",
+        color="ecommerce_share_pct",
+        title=f"Maturity Matrix: Size vs. Adoption ({selected_year})",
+        labels={"total_value": "Total Market Size ($)", "ecommerce_share_pct": "Digital Penetration (%)"},
+        color_continuous_scale="Blues"
+    )
+    # Add a vertical line for the average market size and horizontal for average adoption
+    avg_share = df_year["ecommerce_share_pct"].mean()
+    avg_size = df_year["total_value"].mean()
+    
+    fig_scatter.add_vline(x=avg_size, line_dash="dash", line_color="gray", annotation_text="Avg Size")
+    fig_scatter.add_hline(y=avg_share, line_dash="dash", line_color="gray", annotation_text="Avg Tech")
+    
+    fig_scatter.update_layout(coloraxis_showscale=False, **layout_settings)
 
-    return kpi_share, kpi_ecom, kpi_total, fig_trend, fig_bar, fig_tb, fig_stacked
+    return kpi_share, kpi_ecom, kpi_total, fig_trend, fig_bar, fig_scatter, fig_stacked
 
 if __name__ == "__main__":
     app.run_server(host="0.0.0.0", port=8050, debug=True)
